@@ -18,20 +18,19 @@ frontend/
 │  ├─ app/               # ルート、レイアウト、ページ
 │  ├─ components/        # 複数機能で共有するUI
 │  ├─ features/          # 機能単位のUI・状態・処理
-│  ├─ lib/               # APIクライアントなどの共通処理
-│  └─ types/             # 共有するTypeScript型
+│  └─ lib/               # APIクライアント、データ取得境界、関連する型
 ├─ .env.example          # 環境変数のサンプル
 └─ package.json
 ```
 
-`components`、`features`、`lib`、`types` は必要になった時点で作成します。空の抽象化や、用途の決まっていない共通化は追加しません。
+`components`、`features`、`lib` は必要になった時点で作成します。空の抽象化や、用途の決まっていない共通化は追加しません。API契約の型は利用箇所と変更理由が同じため、`src/lib/api/types.ts` にまとめます。
 
 ## 依存方向
 
 ```text
 app → features → components
        └───────→ lib → FastAPI
-types は各層から参照可能
+API契約型は各層から参照可能
 ```
 
 - ページは画面構成を担当し、複雑なロジックを持たせない
