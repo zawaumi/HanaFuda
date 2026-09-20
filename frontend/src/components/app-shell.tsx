@@ -56,18 +56,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span>HanaFuda</span>
         </Link>
         <Navigation />
-        <div className={styles.accountCard}>
-          <span className={styles.avatar} aria-hidden="true">T</span>
-          <span><strong>てつひこ</strong><small>大学生</small></span>
-        </div>
       </aside>
       <div className={styles.workspace}>
         <header className={styles.topbar}>
           <span className={styles.topbarLabel}>会話の準備</span>
-          <Link className={styles.profileLink} href="/profile">
-            <span className={styles.avatar} aria-hidden="true">T</span>
-            <span className={styles.profileText}>プロフィール</span>
-          </Link>
         </header>
         <main id="main-content" className={styles.content} tabIndex={-1}>{children}</main>
       </div>
