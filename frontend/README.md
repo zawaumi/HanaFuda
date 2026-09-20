@@ -1,6 +1,6 @@
-# TalkDeck Frontend
+# HanaFuda Frontend
 
-TalkDeckのフロントエンドです。バックエンドとは独立して起動し、HTTP APIを通してのみ連携します。
+HanaFudaのフロントエンドです。バックエンドとは独立して起動し、HTTP APIを通してのみ連携します。
 
 ## 必要な環境
 
