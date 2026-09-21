@@ -144,6 +144,23 @@ def create_conversation(
         raise HTTPException(status_code=503, detail="会話結果を保存できませんでした。") from error
 
 
+@router.get("/persons/{person_id}/memories", response_model=List[PersonMemory], tags=["memories"])
+def list_memories(
+    person_id: UUID,
+    user_id: str = Depends(get_current_user_id),
+    repository: Repository = Depends(get_repository),
+) -> List[PersonMemory]:
+    try:
+        if repository.get_person(user_id, str(person_id)) is None:
+            raise _not_found("相手が見つかりません。")
+        return [
+            PersonMemory.model_validate(item)
+            for item in repository.list_memories(user_id, str(person_id))
+        ]
+    except RepositoryError as error:
+        raise HTTPException(status_code=503, detail="記憶を取得できませんでした。") from error
+
+
 @router.post("/persons/{person_id}/memories", response_model=PersonMemory, status_code=status.HTTP_201_CREATED, tags=["memories"])
 def create_memory(
     person_id: UUID,
