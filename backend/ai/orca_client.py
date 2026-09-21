@@ -6,6 +6,7 @@ import httpx
 from pydantic import ValidationError
 
 from ai.settings import OrcaRouterSettings
+from integrations.http_client import ExternalAPIError, post_json
 
 
 class OrcaRouterError(RuntimeError):
@@ -47,18 +48,16 @@ class OrcaRouterClient:
         }
 
         try:
-            async with httpx.AsyncClient(timeout=self.settings.timeout_seconds) as client:
-                response = await client.post(
-                    self.settings.chat_completions_url,
-                    headers=headers,
-                    json=payload,
-                )
-                response.raise_for_status()
-        except httpx.HTTPError as error:
+            data = await post_json(
+                self.settings.chat_completions_url,
+                headers=headers,
+                payload=payload,
+                timeout=self.settings.timeout_seconds,
+            )
+        except (ExternalAPIError, httpx.HTTPError) as error:
             raise OrcaRouterError("OrcaRouterへの接続に失敗しました。") from error
 
         try:
-            data = response.json()
             content = data["choices"][0]["message"]["content"]
         except (IndexError, KeyError, TypeError, ValueError) as error:
             raise OrcaRouterError("OrcaRouterの応答形式が期待どおりではありません。") from error
