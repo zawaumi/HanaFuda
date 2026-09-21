@@ -1,10 +1,20 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
+from api.routers import router
 from config import get_settings
 from db.client import check_supabase_connection
 
 settings = get_settings()
 app = FastAPI(title=settings.app_name, version="0.1.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
+    allow_headers=["Content-Type", "X-User-ID"],
+)
+app.include_router(router)
 
 
 @app.get("/")
