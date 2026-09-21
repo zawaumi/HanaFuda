@@ -59,3 +59,39 @@ create table if not exists public.person_memories (
 );
 
 create index if not exists person_memories_person_id_idx on public.person_memories(person_id);
+
+create or replace function public.set_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+    new.updated_at = now();
+    return new;
+end;
+$$;
+
+drop trigger if exists users_set_updated_at on public.users;
+create trigger users_set_updated_at
+before update on public.users
+for each row execute function public.set_updated_at();
+
+drop trigger if exists persons_set_updated_at on public.persons;
+create trigger persons_set_updated_at
+before update on public.persons
+for each row execute function public.set_updated_at();
+
+alter table public.conversations
+    drop constraint if exists conversations_person_belongs_to_user;
+create unique index if not exists persons_id_user_id_unique
+    on public.persons (id, user_id);
+alter table public.conversations
+    add constraint conversations_person_belongs_to_user
+    foreign key (person_id, user_id)
+    references public.persons (id, user_id);
+
+alter table public.persons
+    add constraint persons_name_not_blank check (length(trim(name)) > 0);
+alter table public.conversations
+    add constraint conversations_purpose_not_blank check (length(trim(purpose)) > 0);
+alter table public.conversations
+    add constraint conversations_situation_not_blank check (length(trim(situation)) > 0);
