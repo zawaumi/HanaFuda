@@ -30,7 +30,6 @@ class OrcaRouterClient:
         *,
         model: Optional[str] = None,
         temperature: float = 0.2,
-        response_format: Optional[Mapping[str, str]] = None,
     ) -> str:
         """Send messages to OrcaRouter and return the assistant's text."""
 
@@ -39,8 +38,6 @@ class OrcaRouterClient:
             "messages": list(messages),
             "temperature": temperature,
         }
-        if response_format:
-            payload["response_format"] = dict(response_format)
         headers = {
             "Authorization": f"Bearer {self.settings.api_key.get_secret_value()}",
             "Content-Type": "application/json",
