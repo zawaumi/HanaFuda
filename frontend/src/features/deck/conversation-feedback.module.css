@@ -16,7 +16,7 @@
 .confirm input { width: 1.1rem; height: 1.1rem; accent-color: var(--color-primary); }
 .error { margin: 0; color: var(--color-danger); }
 .actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-5); }
-.actions a:not(.button) { color: var(--color-primary); font-weight: 800; }
+.actions a:not(:global(.button)) { color: var(--color-primary); font-weight: 800; }
 .actions button:disabled { opacity: .6; cursor: wait; }
 .panel { max-width: 42rem; margin: var(--space-8) auto; padding: var(--space-8); text-align: center; }
 .panel .actions { justify-content: center; margin-top: var(--space-6); }
