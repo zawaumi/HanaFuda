@@ -138,7 +138,9 @@ class DeckService:
             return generate_fallback(request)
         try:
             return await OrcaRouterDeckGenerator(self.client).generate_async(request)
-        except DeckGenerationError:
+        except (DeckGenerationError, OrcaRouterError) as error:
             if not self.settings.deck_fallback_enabled:
-                raise
+                if isinstance(error, DeckGenerationError):
+                    raise
+                raise DeckGenerationError(str(error)) from error
             return generate_fallback(request)
