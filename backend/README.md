@@ -53,4 +53,8 @@ uv run fastapi dev
 
 http://127.0.0.1:8000/docs
 
+フロントエンドから接続する場合は `frontend/.env.local` に
+`NEXT_PUBLIC_API_MODE=remote` と
+`NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000` を設定します。APIの一覧とエラー形式は、リポジトリルートの `docs/api/backend-api.md` を参照してください。
+
 サーバーを終了する場合は、ターミナルで Ctrl + C を入力してください。
