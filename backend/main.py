@@ -2,7 +2,7 @@ import logging
 import time
 from uuid import uuid4
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
@@ -55,3 +55,20 @@ async def health():
 
     database = check_supabase_connection(settings)
     return {"status": "ok" if database["connected"] else "degraded", "database": database}
+
+
+@app.get("/health/live", tags=["health"])
+async def liveness():
+    """Process-only health check suitable for a basic process monitor."""
+
+    return {"status": "ok"}
+
+
+@app.get("/health/ready", tags=["health"])
+async def readiness():
+    """Readiness check that verifies the configured database is reachable."""
+
+    database = check_supabase_connection(settings)
+    if not database["connected"]:
+        raise HTTPException(status_code=503, detail="データベースへ接続できません。")
+    return {"status": "ok", "database": database}
