@@ -64,6 +64,12 @@ export function createRemoteDataSource(): HanaFudaDataSource {
       });
     },
 
+    getPersonMemories(personId) {
+      return apiFetch<PersonMemory[]>(
+        `/api/persons/${encodeURIComponent(personId)}/memories`,
+      );
+    },
+
     createPersonMemory(personId, input) {
       return apiFetch<PersonMemory>(
         `/api/persons/${encodeURIComponent(personId)}/memories`,

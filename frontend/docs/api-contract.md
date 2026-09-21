@@ -50,7 +50,7 @@ const persons = await dataSource.getPersons({ search: "佐藤" });
 | `GET` / `POST` | `/api/persons` | 相手一覧・登録 |
 | `GET` / `PATCH` | `/api/persons/{person_id}` | 相手詳細・更新 |
 | `GET` / `POST` | `/api/conversations` | 会話履歴・結果保存 |
-| `POST` | `/api/persons/{person_id}/memories` | 記憶保存 |
+| `GET` / `POST` | `/api/persons/{person_id}/memories` | 記憶一覧・保存 |
 | `GET` / `PATCH` | `/api/profile` | 自分のプロフィール |
 
 FastAPIのOpenAPIが利用可能になったら、リクエスト・レスポンスの型を照合し、この文書との差分を解消してから画面へ接続します。
