@@ -147,6 +147,16 @@ export function createMockDataSource(): HanaFudaDataSource {
       return clone(result);
     },
 
+    async getPersonMemories(personId) {
+      if (!persons.some((person) => person.id === personId)) {
+        throw new ApiError("対象が見つかりません。", {
+          kind: "not_found",
+          status: 404,
+        });
+      }
+      return clone(memories.filter((memory) => memory.person_id === personId));
+    },
+
     async createPersonMemory(personId, input) {
       if (!persons.some((person) => person.id === personId)) {
         throw new ApiError("対象が見つかりません。", {

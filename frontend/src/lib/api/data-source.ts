@@ -30,6 +30,7 @@ export interface HanaFudaDataSource {
   getConversations(query?: ConversationQuery): Promise<Conversation[]>;
   createConversation(input: CreateConversationInput): Promise<Conversation>;
   generateDeck(input: GenerateDeckInput): Promise<GenerateDeckResult>;
+  getPersonMemories(personId: string): Promise<PersonMemory[]>;
   createPersonMemory(
     personId: string,
     input: CreatePersonMemoryInput,
