@@ -1,12 +1,19 @@
-from fastapi import FastAPI
+import logging
+import time
+from uuid import uuid4
+
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.routers import router
 from config import get_settings
 from db.client import check_supabase_connection
 from errors import register_exception_handlers
+from logging_config import configure_logging, request_log_extra
 
 settings = get_settings()
+configure_logging(settings.log_level)
+logger = logging.getLogger("hanafuda.api")
 app = FastAPI(title=settings.app_name, version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
@@ -17,6 +24,22 @@ app.add_middleware(
 )
 app.include_router(router)
 register_exception_handlers(app)
+
+
+@app.middleware("http")
+async def request_logging_middleware(request: Request, call_next):
+    request_id = request.headers.get("X-Request-ID", str(uuid4()))
+    started = time.perf_counter()
+    response = await call_next(request)
+    duration_ms = (time.perf_counter() - started) * 1000
+    response.headers["X-Request-ID"] = request_id
+    logger.info(
+        "%s %s",
+        request.method,
+        request.url.path,
+        extra=request_log_extra(request_id, response.status_code, duration_ms),
+    )
+    return response
 
 
 @app.get("/")
