@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from api.routers import router
+from api.routes import router
 from config import get_settings
 from db.client import check_supabase_connection
 from errors import register_exception_handlers
