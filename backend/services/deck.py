@@ -57,6 +57,11 @@ def build_deck_prompt(request: DeckGenerateRequest) -> str:
 class RuleBasedDeckGenerator:
     """Deterministic fallback for local demos and provider outages."""
 
+    @staticmethod
+    def _contains_avoided(values: List[str], avoided: set[str]) -> bool:
+        normalized_values = [value.casefold() for value in values]
+        return any(term in value for term in avoided for value in normalized_values)
+
     def generate(self, request: DeckGenerateRequest) -> DeckGenerateResponse:
         context = request.context
         person_name = request.person.name if request.person and request.person.name else "相手"
@@ -67,10 +72,20 @@ class RuleBasedDeckGenerator:
             ("これからやりたいこと", f"{person_name}さんは、これからどんなことをしてみたいですか？"),
             ("軽い近況", "最近あったことで、誰かに話したくなったことはありますか？"),
             ("共通の場", "ここに来るのは今回が初めてですか？"),
+            ("好きなこと", "好きなことを教えてもらえますか？"),
+            ("大切にしていること", "普段、大切にしていることは何ですか？"),
+            ("印象に残ること", "印象に残っている出来事はありますか？"),
         ]
-        avoided = {topic.casefold() for topic in request.user.avoid_topics}
-        selected = [item for item in candidates if not any(word and word in item[0].casefold() for word in avoided)]
-        selected = selected[:3] if len(selected) >= 3 else candidates[:3]
+        avoided = {topic.strip().casefold() for topic in request.user.avoid_topics if topic.strip()}
+        selected = [
+            item
+            for item in candidates
+            if not self._contains_avoided([item[0], item[1]], avoided)
+        ][:3]
+        if len(selected) < 3:
+            raise DeckGenerationError(
+                "避けたい話題を除外すると、3件の話題を生成できません。"
+            )
         cards: List[DeckCard] = [
             DeckCard(
                 topic=topic,
