@@ -58,7 +58,8 @@ export function createRemoteDataSource(): HanaFudaDataSource {
     },
 
     generateDeck(input) {
-      const confirmedMemories = input.memories.filter((memory) => memory.confirmed);
+      // A draft saved before memories were added may still exist in sessionStorage.
+      const confirmedMemories = (input.memories ?? []).filter((memory) => memory.confirmed);
       return apiFetch<GenerateDeckResult>("/api/deck/generate", {
         method: "POST",
         timeoutMs: 60_000,
