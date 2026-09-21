@@ -16,6 +16,7 @@ class OrcaRouterSettings(BaseSettings):
         env_file=ENV_FILE,
         env_file_encoding="utf-8",
         extra="ignore",
+        populate_by_name=True,
     )
 
     api_key: SecretStr = Field(validation_alias="ORCAROUTER_API_KEY")
