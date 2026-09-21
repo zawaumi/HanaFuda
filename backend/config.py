@@ -41,6 +41,10 @@ class Settings(BaseSettings):
     cors_allow_credentials: bool = Field(
         default=False, validation_alias="CORS_ALLOW_CREDENTIALS"
     )
+    allowed_hosts: List[str] = Field(
+        default_factory=lambda: ["localhost", "127.0.0.1", "testserver"],
+        validation_alias="ALLOWED_HOSTS",
+    )
     default_user_id: str = Field(
         default="00000000-0000-0000-0000-000000000001",
         validation_alias="DEFAULT_USER_ID",
@@ -56,7 +60,9 @@ class Settings(BaseSettings):
         default=False, validation_alias="DECK_FALLBACK_ENABLED"
     )
 
-    @field_validator("cors_origins", "cors_methods", "cors_headers", mode="before")
+    @field_validator(
+        "cors_origins", "cors_methods", "cors_headers", "allowed_hosts", mode="before"
+    )
     @classmethod
     def parse_cors_origins(cls, value: object) -> object:
         if isinstance(value, str):
