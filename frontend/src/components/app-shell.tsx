@@ -60,6 +60,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className={styles.workspace}>
         <header className={styles.topbar}>
           <span className={styles.topbarLabel}>会話の準備</span>
+          <Link className={styles.profileLink} href="/profile">プロフィール</Link>
         </header>
         <main id="main-content" className={styles.content} tabIndex={-1}>{children}</main>
       </div>
