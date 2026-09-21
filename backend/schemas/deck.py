@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List, Literal, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, constr
 
 
 class SchemaModel(BaseModel):
@@ -18,9 +18,9 @@ class UserProfileContext(SchemaModel):
 
     name: Optional[str] = Field(default=None, max_length=100)
     status: Optional[str] = Field(default=None, max_length=200)
-    interests: List[str] = Field(default_factory=list)
+    interests: List[constr(strip_whitespace=True, min_length=1, max_length=100)] = Field(default_factory=list)
     recent: Optional[str] = Field(default=None, max_length=500)
-    avoid_topics: List[str] = Field(default_factory=list)
+    avoid_topics: List[constr(strip_whitespace=True, min_length=1, max_length=100)] = Field(default_factory=list)
 
 
 class PersonContext(SchemaModel):

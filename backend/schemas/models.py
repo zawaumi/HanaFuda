@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List, Literal, Optional
 from uuid import UUID
 
-from pydantic import Field
+from pydantic import Field, constr, model_validator
 
 from schemas.deck import DeckCard, SchemaModel
 
@@ -13,9 +13,13 @@ class UserProfile(SchemaModel):
     id: UUID
     name: str = Field(default="", max_length=100)
     status: str = Field(default="", max_length=200)
-    interests: List[str] = Field(default_factory=list, max_length=20)
+    interests: List[constr(strip_whitespace=True, min_length=1, max_length=100)] = Field(
+        default_factory=list, max_length=20
+    )
     recent: str = Field(default="", max_length=500)
-    avoid_topics: List[str] = Field(default_factory=list, max_length=20)
+    avoid_topics: List[constr(strip_whitespace=True, min_length=1, max_length=100)] = Field(
+        default_factory=list, max_length=20
+    )
     created_at: datetime
     updated_at: datetime
 
@@ -23,9 +27,19 @@ class UserProfile(SchemaModel):
 class UserProfileUpdate(SchemaModel):
     name: Optional[str] = Field(default=None, max_length=100)
     status: Optional[str] = Field(default=None, max_length=200)
-    interests: Optional[List[str]] = Field(default=None, max_length=20)
+    interests: Optional[List[constr(strip_whitespace=True, min_length=1, max_length=100)]] = Field(
+        default=None, max_length=20
+    )
     recent: Optional[str] = Field(default=None, max_length=500)
-    avoid_topics: Optional[List[str]] = Field(default=None, max_length=20)
+    avoid_topics: Optional[List[constr(strip_whitespace=True, min_length=1, max_length=100)]] = Field(
+        default=None, max_length=20
+    )
+
+    @model_validator(mode="after")
+    def require_a_change(self) -> "UserProfileUpdate":
+        if not self.model_fields_set:
+            raise ValueError("更新する項目を1つ以上指定してください。")
+        return self
 
 
 class PersonCreate(SchemaModel):
