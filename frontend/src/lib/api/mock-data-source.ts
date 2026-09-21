@@ -20,6 +20,7 @@ function clone<T>(value: T): T {
 
 export function createMockDataSource(): HanaFudaDataSource {
   let user = clone(mockUser);
+  let generationCount = 0;
   const persons = clone(mockPersons);
   const conversations = clone(mockConversations);
   const memories = clone(mockPersonMemories);
@@ -123,6 +124,7 @@ export function createMockDataSource(): HanaFudaDataSource {
     },
 
     async generateDeck(input) {
+      generationCount += 1;
       const personName = input.person?.name ?? "相手";
       const result: GenerateDeckResult = {
         summary: `${personName}との会話では、今いる場所から自然に話を始めましょう。`,
@@ -162,6 +164,8 @@ export function createMockDataSource(): HanaFudaDataSource {
           },
         ],
       };
+      const offset = (generationCount - 1) % result.cards.length;
+      result.cards = [...result.cards.slice(offset), ...result.cards.slice(0, offset)];
       return clone(result);
     },
 
