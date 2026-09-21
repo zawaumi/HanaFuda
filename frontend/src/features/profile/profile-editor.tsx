@@ -26,6 +26,7 @@ export function ProfileEditor() {
   const [saved, setSaved] = useState<Values | null>(null);
   const [message, setMessage] = useState("");
   const pending = useRef(false);
+  const [reload, setReload] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -41,7 +42,7 @@ export function ProfileEditor() {
       setState("error");
     });
     return () => { active = false; };
-  }, []);
+  }, [reload]);
 
   const dirty = saved !== null && JSON.stringify(values) !== JSON.stringify(saved);
 
@@ -74,7 +75,7 @@ export function ProfileEditor() {
   }
 
   if (state === "loading") return <p className={styles.notice} aria-busy="true">プロフィールを読み込み中…</p>;
-  if (state === "error") return <div className={styles.notice} role="alert">{message}</div>;
+  if (state === "error") return <div className={styles.notice} role="alert">{message} <button type="button" onClick={() => { setState("loading"); setReload((value) => value + 1); }}>もう一度試す</button></div>;
 
   return (
     <div className={styles.page}>

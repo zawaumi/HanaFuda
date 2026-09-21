@@ -7,6 +7,7 @@
 | [architecture.md](architecture.md) | ディレクトリ構成と責務 |
 | [development.md](development.md) | セットアップ、日常の開発手順、PR前確認 |
 | [api-contract.md](api-contract.md) | FastAPIとの接続ルールとエラー処理 |
+| [mvp-qa.md](mvp-qa.md) | 横断QAの確認結果と実機チェック項目 |
 | [dev-diary/](dev-diary/README.md) | AI駆動フロントエンド開発の日記 |
 
 プロダクト全体の仕様はリポジトリ直下の `docs/` を正とします。ここにはフロントエンド固有の情報だけを置きます。
