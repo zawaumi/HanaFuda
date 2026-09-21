@@ -1,5 +1,17 @@
 # BackEnd
 
+## Supabase接続設定
+
+1. Supabaseでプロジェクトを作成し、`supabase/migrations/0001_initial_schema.sql` をSQL Editorで実行します。
+2. `backend/.env.example` を `backend/.env` にコピーします。
+3. `SUPABASE_URL` と `SUPABASE_KEY` を設定します。サーバー側で書き込みを行う場合は、管理画面に表示される server-only key を `SUPABASE_SERVICE_ROLE_KEY` に設定してください。
+
+`.env` はGit管理対象外です。キーはソースコードやログへ貼り付けないでください。
+
+設定後、FastAPIを起動して `http://127.0.0.1:8000/health` を開きます。`database.connected` が `true` ならSupabaseへの疎通確認に成功しています。
+
+Supabase未設定でもAPIの単体テストは実行できます。テストではインメモリのリポジトリを使用します。
+
 ## AI（OrcaRouter）接続設定
 
 AI連携の設定は `backend/.env` に保存します。APIキーはGitへ登録しません。
