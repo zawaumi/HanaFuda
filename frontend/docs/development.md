@@ -20,10 +20,13 @@ Copy-Item .env.example .env.local
 | 変数 | 必須 | 説明 |
 |---|---:|---|
 | `NEXT_PUBLIC_API_BASE_URL` | Yes | FastAPIのベースURL |
+| `NEXT_PUBLIC_API_MODE` | Yes | `mock` または `remote`。未指定時は `mock` |
 
 秘密情報やLLMのAPIキーはフロントエンドへ置きません。`NEXT_PUBLIC_` が付く値はブラウザから参照可能です。
 
 `mock` モードのプロフィールはブラウザーの `localStorage` に保存され、再読み込み後も残ります。これは開発・レビュー用で、別のブラウザーや端末とは共有しません。実データを扱う場合は `remote` モードを使ってください。
+
+実APIを試す場合は `.env.local` のモードを `remote` にし、FastAPIを `http://localhost:8000` で起動します。設定変更後は `npm run dev` を再起動してください。API側のDB・生成プロバイダー設定はバックエンド担当の手順に従ってください。
 
 ## 日常の開発
 

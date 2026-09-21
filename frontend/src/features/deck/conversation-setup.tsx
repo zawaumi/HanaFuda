@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
-import { dataSource, isApiError, type Conversation, type Person, type User } from "@/lib/api";
+import { dataSource, isApiError, type Conversation, type Person, type PersonMemory, type User } from "@/lib/api";
 import { loadDeckContextForPerson, saveDeckDraft } from "@/lib/deck-flow";
 import styles from "./conversation-setup.module.css";
 
-type Loaded = { user: User; person: Person; history: Conversation[] };
+type Loaded = { user: User; person: Person; history: Conversation[]; memories: PersonMemory[] };
 type LoadState = { status: "loading" } | { status: "ready"; data: Loaded } | { status: "error"; message: string };
 
 export function ConversationSetup({ personId, initialSituation, resumeDraft }: { personId: string; initialSituation: string; resumeDraft: boolean }) {
@@ -17,6 +17,7 @@ export function ConversationSetup({ personId, initialSituation, resumeDraft }: {
   const [situation, setSituation] = useState(initialSituation);
   const [extra, setExtra] = useState("");
   const [errors, setErrors] = useState<{ purpose?: string; situation?: string }>({});
+  const [reload, setReload] = useState(0);
 
   useEffect(() => {
     if (!resumeDraft) return;
@@ -31,11 +32,11 @@ export function ConversationSetup({ personId, initialSituation, resumeDraft }: {
 
   useEffect(() => {
     let active = true;
-    void Promise.all([dataSource.getProfile(), dataSource.getPerson(personId), dataSource.getConversations({ personId })])
-      .then(([user, person, history]) => { if (active) setLoad({ status: "ready", data: { user, person, history } }); })
+    void Promise.all([dataSource.getProfile(), dataSource.getPerson(personId), dataSource.getConversations({ personId }), dataSource.getPersonMemories(personId)])
+      .then(([user, person, history, memories]) => { if (active) setLoad({ status: "ready", data: { user, person, history, memories } }); })
       .catch((error: unknown) => { if (active) setLoad({ status: "error", message: isApiError(error) ? error.message : "情報を読み込めませんでした。" }); });
     return () => { active = false; };
-  }, [personId]);
+  }, [personId, reload]);
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -43,12 +44,12 @@ export function ConversationSetup({ personId, initialSituation, resumeDraft }: {
     const next = { purpose: purpose.trim() ? undefined : "会話の目的を入力してください。", situation: situation.trim() ? undefined : "会う状況を入力してください。" };
     setErrors(next);
     if (next.purpose || next.situation) return;
-    saveDeckDraft({ user: load.data.user, person: load.data.person, history: load.data.history, context: { purpose: purpose.trim(), situation: situation.trim(), extra: extra.trim() } });
+    saveDeckDraft({ user: load.data.user, person: load.data.person, history: load.data.history, memories: load.data.memories, context: { purpose: purpose.trim(), situation: situation.trim(), extra: extra.trim() } });
     router.push("/deck/generating");
   }
 
   if (load.status === "loading") return <p className={styles.notice} aria-busy="true">会話設定を読み込み中…</p>;
-  if (load.status === "error") return <div className={styles.notice} role="alert">{load.message} <Link href="/connections">つながりへ戻る</Link></div>;
+  if (load.status === "error") return <div className={styles.notice} role="alert">{load.message} <button type="button" onClick={() => { setLoad({ status: "loading" }); setReload((value) => value + 1); }}>もう一度試す</button> <Link href="/connections">つながりへ戻る</Link></div>;
 
   return <div className={styles.page}>
     <header className="page-header"><p className="eyebrow">Conversation setup</p><h1>{load.data.person.name}との会話を準備</h1><p>{load.data.person.relationship}。分かる範囲で今回の状況を入力してください。</p></header>
