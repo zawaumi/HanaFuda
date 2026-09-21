@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { dataSource, isApiError, type Person } from "@/lib/api";
 import styles from "./person-create-form.module.css";
 
@@ -55,6 +55,7 @@ function submitErrorMessage(error: unknown) {
 }
 
 export function PersonCreateForm() {
+  const submittingRef = useRef(false);
   const [values, setValues] = useState<FormValues>(initialValues);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,13 +70,14 @@ export function PersonCreateForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (isSubmitting) return;
+    if (submittingRef.current) return;
 
     const nextErrors = validate(values);
     setErrors(nextErrors);
     setSubmitError(null);
     if (Object.keys(nextErrors).length > 0) return;
 
+    submittingRef.current = true;
     setIsSubmitting(true);
     try {
       const person = await dataSource.createPerson({
@@ -87,6 +89,7 @@ export function PersonCreateForm() {
     } catch (error) {
       setSubmitError(submitErrorMessage(error));
     } finally {
+      submittingRef.current = false;
       setIsSubmitting(false);
     }
   }
