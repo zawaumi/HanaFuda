@@ -21,7 +21,9 @@ class Repository(Protocol):
 
     def upsert_user(self, user_id: str, values: Dict[str, Any]) -> Dict[str, Any]: ...
 
-    def list_persons(self, user_id: str, query: Optional[str] = None) -> List[Dict[str, Any]]: ...
+    def list_persons(
+        self, user_id: str, query: Optional[str] = None, limit: int = 100
+    ) -> List[Dict[str, Any]]: ...
 
     def get_person(self, user_id: str, person_id: str) -> Optional[Dict[str, Any]]: ...
 
@@ -29,7 +31,9 @@ class Repository(Protocol):
 
     def update_person(self, user_id: str, person_id: str, values: Dict[str, Any]) -> Optional[Dict[str, Any]]: ...
 
-    def list_conversations(self, user_id: str, person_id: Optional[str] = None) -> List[Dict[str, Any]]: ...
+    def list_conversations(
+        self, user_id: str, person_id: Optional[str] = None, limit: int = 100
+    ) -> List[Dict[str, Any]]: ...
 
     def create_conversation(self, user_id: str, values: Dict[str, Any]) -> Dict[str, Any]: ...
 
@@ -77,7 +81,7 @@ class SupabaseRepository:
         except Exception as error:
             raise RepositoryError("ユーザープロフィールの保存に失敗しました。") from error
 
-    def list_persons(self, user_id: str, query: Optional[str] = None) -> List[Dict[str, Any]]:
+    def list_persons(self, user_id: str, query: Optional[str] = None, limit: int = 100) -> List[Dict[str, Any]]:
         try:
             request = self.client.table("persons").select("*").eq("user_id", user_id)
             if query:
@@ -87,7 +91,7 @@ class SupabaseRepository:
                         escaped
                     )
                 )
-            response = request.order("updated_at", desc=True).execute()
+            response = request.order("updated_at", desc=True).limit(limit).execute()
             return list(_data(response) or [])
         except Exception as error:
             raise RepositoryError("相手一覧の取得に失敗しました。") from error
@@ -131,12 +135,14 @@ class SupabaseRepository:
         except Exception as error:
             raise RepositoryError("相手情報の更新に失敗しました。") from error
 
-    def list_conversations(self, user_id: str, person_id: Optional[str] = None) -> List[Dict[str, Any]]:
+    def list_conversations(
+        self, user_id: str, person_id: Optional[str] = None, limit: int = 100
+    ) -> List[Dict[str, Any]]:
         try:
             request = self.client.table("conversations").select("*").eq("user_id", user_id)
             if person_id:
                 request = request.eq("person_id", person_id)
-            response = request.order("created_at", desc=True).execute()
+            response = request.order("created_at", desc=True).limit(limit).execute()
             return list(_data(response) or [])
         except Exception as error:
             raise RepositoryError("会話履歴の取得に失敗しました。") from error
@@ -216,7 +222,7 @@ class InMemoryRepository:
         self.users[user_id] = current
         return current.copy()
 
-    def list_persons(self, user_id: str, query: Optional[str] = None) -> List[Dict[str, Any]]:
+    def list_persons(self, user_id: str, query: Optional[str] = None, limit: int = 100) -> List[Dict[str, Any]]:
         values = [person for person in self.persons.values() if person["user_id"] == user_id]
         if query:
             needle = query.casefold()
@@ -228,7 +234,7 @@ class InMemoryRepository:
                     for field in ("name", "relationship", "known_information")
                 )
             ]
-        return sorted(values, key=lambda item: item["updated_at"], reverse=True)
+        return sorted(values, key=lambda item: item["updated_at"], reverse=True)[:limit]
 
     def get_person(self, user_id: str, person_id: str) -> Optional[Dict[str, Any]]:
         person = self.persons.get(person_id)
@@ -249,11 +255,13 @@ class InMemoryRepository:
         person["updated_at"] = self._now()
         return person.copy()
 
-    def list_conversations(self, user_id: str, person_id: Optional[str] = None) -> List[Dict[str, Any]]:
+    def list_conversations(
+        self, user_id: str, person_id: Optional[str] = None, limit: int = 100
+    ) -> List[Dict[str, Any]]:
         values = [conversation for conversation in self.conversations.values() if conversation["user_id"] == user_id]
         if person_id:
             values = [conversation for conversation in values if conversation.get("person_id") == person_id]
-        return sorted(values, key=lambda item: item["created_at"], reverse=True)
+        return sorted(values, key=lambda item: item["created_at"], reverse=True)[:limit]
 
     def create_conversation(self, user_id: str, values: Dict[str, Any]) -> Dict[str, Any]:
         conversation_id = str(uuid4())

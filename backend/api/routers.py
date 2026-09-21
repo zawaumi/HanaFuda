@@ -64,11 +64,12 @@ def update_profile(
 @router.get("/persons", response_model=List[Person], tags=["persons"])
 def list_persons(
     q: Optional[str] = Query(default=None, max_length=100),
+    limit: int = Query(default=100, ge=1, le=100),
     user_id: str = Depends(get_current_user_id),
     repository: Repository = Depends(get_repository),
 ) -> List[Person]:
     try:
-        return [Person.model_validate(item) for item in repository.list_persons(user_id, q)]
+        return [Person.model_validate(item) for item in repository.list_persons(user_id, q, limit)]
     except RepositoryError as error:
         raise HTTPException(status_code=503, detail="相手一覧を取得できませんでした。") from error
 
@@ -119,13 +120,14 @@ def update_person(
 @router.get("/conversations", response_model=List[Conversation], tags=["conversations"])
 def list_conversations(
     person_id: Optional[UUID] = Query(default=None),
+    limit: int = Query(default=100, ge=1, le=100),
     user_id: str = Depends(get_current_user_id),
     repository: Repository = Depends(get_repository),
 ) -> List[Conversation]:
     try:
         return [
             Conversation.model_validate(item)
-            for item in repository.list_conversations(user_id, str(person_id) if person_id else None)
+            for item in repository.list_conversations(user_id, str(person_id) if person_id else None, limit)
         ]
     except RepositoryError as error:
         raise HTTPException(status_code=503, detail="会話履歴を取得できませんでした。") from error
