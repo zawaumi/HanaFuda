@@ -52,7 +52,7 @@ export function DeckGenerating() {
     });
   }
 
-  const backHref = draft?.person ? `/connections/${draft.person.id}/deck/new` : "/connections";
+  const backHref = draft?.person ? `/connections/${draft.person.id}/deck/new?resume=1` : "/connections";
 
   return <section className={`${styles.panel} surface`} aria-live="polite">
     {state === "loading" ? <>
