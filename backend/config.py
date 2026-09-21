@@ -30,6 +30,17 @@ class Settings(BaseSettings):
         default_factory=lambda: ["http://localhost:3000", "http://127.0.0.1:3000"],
         validation_alias="CORS_ORIGINS",
     )
+    cors_methods: List[str] = Field(
+        default_factory=lambda: ["GET", "POST", "PATCH", "OPTIONS"],
+        validation_alias="CORS_ALLOW_METHODS",
+    )
+    cors_headers: List[str] = Field(
+        default_factory=lambda: ["Content-Type", "X-User-ID", "X-Request-ID"],
+        validation_alias="CORS_ALLOW_HEADERS",
+    )
+    cors_allow_credentials: bool = Field(
+        default=False, validation_alias="CORS_ALLOW_CREDENTIALS"
+    )
     default_user_id: str = Field(
         default="00000000-0000-0000-0000-000000000001",
         validation_alias="DEFAULT_USER_ID",
@@ -45,7 +56,7 @@ class Settings(BaseSettings):
         default=False, validation_alias="DECK_FALLBACK_ENABLED"
     )
 
-    @field_validator("cors_origins", mode="before")
+    @field_validator("cors_origins", "cors_methods", "cors_headers", mode="before")
     @classmethod
     def parse_cors_origins(cls, value: object) -> object:
         if isinstance(value, str):
