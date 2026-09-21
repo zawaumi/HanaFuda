@@ -22,7 +22,7 @@ NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000
 | `GET` / `POST` | `/api/persons` | 相手一覧 / 登録した相手 |
 | `GET` / `PATCH` | `/api/persons/{person_id}` | 相手情報 |
 | `GET` / `POST` | `/api/conversations` | 会話履歴 / 保存した会話 |
-| `POST` | `/api/persons/{person_id}/memories` | 保存した記憶 |
+| `GET` / `POST` | `/api/persons/{person_id}/memories` | 記憶一覧 / 保存した記憶 |
 | `POST` | `/api/deck/generate` | `{summary, cards}` |
 
 詳細なリクエスト・レスポンス型は `/docs` のOpenAPIと [`deck-generate.md`](./deck-generate.md) を正とします。JSONキーはすべてsnake_caseです。
@@ -35,7 +35,7 @@ NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000
 | ---: | --- |
 | 200 / 201 | 成功 |
 | 400 | ヘッダーなどの形式不正 |
-| 404 | ユーザーのデータが存在しない |
+| 404 | 対象リソースが存在しない |
 | 422 | Pydanticによる入力検証失敗 |
 | 502 | AI・外部サービスの失敗 |
 | 503 | DB・サーバー設定の失敗 |
