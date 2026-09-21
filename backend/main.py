@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.routers import router
 from config import get_settings
 from db.client import check_supabase_connection
+from errors import register_exception_handlers
 
 settings = get_settings()
 app = FastAPI(title=settings.app_name, version="0.1.0")
@@ -15,6 +16,7 @@ app.add_middleware(
     allow_headers=["Content-Type", "X-User-ID"],
 )
 app.include_router(router)
+register_exception_handlers(app)
 
 
 @app.get("/")
