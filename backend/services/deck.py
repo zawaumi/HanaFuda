@@ -116,7 +116,6 @@ class OrcaRouterDeckGenerator:
                 [{"role": "system", "content": "You return only valid JSON."},
                  {"role": "user", "content": build_deck_prompt(request)}],
                 temperature=0.4,
-                response_format={"type": "json_object"},
             )
         except OrcaRouterError as error:
             raise DeckGenerationError(str(error)) from error
