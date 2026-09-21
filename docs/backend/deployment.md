@@ -2,6 +2,8 @@
 
 このリポジトリでは、Dockerを使わずにPythonランタイムを提供するホスティングへデプロイできる設定例として `render.yaml` を用意しています。実際のサービス作成・ドメイン設定・Secret登録は運用者のRenderアカウントで行います。
 
+Pull Requestと`develop`/`main`への変更では `.github/workflows/backend.yml` が `uv sync --frozen`、Ruff、pytestを実行します。ホスティング側のデプロイフックは、品質ジョブ成功後に`main`だけを対象に設定してください。
+
 ## 必須設定
 
 ホスティングのSecretとして次を登録します。

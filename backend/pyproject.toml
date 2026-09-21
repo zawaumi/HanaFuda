@@ -59,4 +59,12 @@ testpaths = ["tests"]
 [dependency-groups]
 dev = [
     "pytest>=8,<9",
+    "ruff>=0.9,<1",
 ]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
