@@ -21,7 +21,6 @@ from schemas.models import (
 )
 from services.deck import DeckGenerationError, DeckService
 
-
 router = APIRouter(prefix="/api")
 
 
@@ -40,7 +39,9 @@ def _not_found(detail: str) -> HTTPException:
 
 
 @router.get("/profile", response_model=UserProfile, tags=["profile"])
-def get_profile(user_id: str = Depends(get_current_user_id), repository: Repository = Depends(get_repository)) -> UserProfile:
+def get_profile(
+    user_id: str = Depends(get_current_user_id), repository: Repository = Depends(get_repository)
+) -> UserProfile:
     try:
         return UserProfile.model_validate(_profile(repository, user_id))
     except RepositoryError as error:
@@ -144,7 +145,12 @@ def create_conversation(
         raise HTTPException(status_code=503, detail="会話結果を保存できませんでした。") from error
 
 
-@router.post("/persons/{person_id}/memories", response_model=PersonMemory, status_code=status.HTTP_201_CREATED, tags=["memories"])
+@router.post(
+    "/persons/{person_id}/memories",
+    response_model=PersonMemory,
+    status_code=status.HTTP_201_CREATED,
+    tags=["memories"],
+)
 def create_memory(
     person_id: UUID,
     payload: PersonMemoryCreate,

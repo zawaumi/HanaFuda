@@ -7,7 +7,6 @@ from typing import List, Optional
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
 ENV_FILE = Path(__file__).resolve().parent / ".env"
 
 

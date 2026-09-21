@@ -6,11 +6,10 @@ That keeps the business logic testable and makes the storage boundary explicit.
 
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Protocol
-from uuid import UUID, uuid4
-
-from supabase import Client
+from uuid import uuid4
 
 from db.client import get_supabase_client
+from supabase import Client
 
 
 class RepositoryError(RuntimeError):
@@ -224,7 +223,10 @@ class InMemoryRepository:
             values = [
                 person
                 for person in values
-                if any(needle in str(person.get(field, "")).casefold() for field in ("name", "relationship", "known_information"))
+                if any(
+                    needle in str(person.get(field, "")).casefold()
+                    for field in ("name", "relationship", "known_information")
+                )
             ]
         return sorted(values, key=lambda item: item["updated_at"], reverse=True)
 

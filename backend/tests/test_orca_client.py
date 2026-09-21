@@ -1,6 +1,7 @@
 """Mocked external-service tests."""
 
 import asyncio
+
 from pydantic import SecretStr
 
 from ai.orca_client import OrcaRouterClient

@@ -63,7 +63,10 @@ class RuleBasedDeckGenerator:
         interests = request.user.interests
         candidates = [
             ("いまの状況", f"いまの{context.situation}、どんなきっかけで来られたんですか？"),
-            ("最近興味があること", f"最近、{interests[0] if interests else '興味を持っていること'}で何か面白いことはありましたか？"),
+            (
+                "最近興味があること",
+                f"最近、{interests[0] if interests else '興味を持っていること'}で何か面白いことはありましたか？",
+            ),
             ("これからやりたいこと", f"{person_name}さんは、これからどんなことをしてみたいですか？"),
             ("軽い近況", "最近あったことで、誰かに話したくなったことはありますか？"),
             ("共通の場", "ここに来るのは今回が初めてですか？"),
