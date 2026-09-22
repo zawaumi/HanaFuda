@@ -3,10 +3,6 @@
   gap: clamp(var(--space-5), 3vw, var(--space-8));
 }
 
-.homeHeader { max-width: none; }
-.homeHeader h1 { font-size: clamp(1.65rem, 2vw, 2rem); letter-spacing: -.045em; }
-.homeHeader > p:last-child { margin-top: var(--space-2); font-size: .9rem; }
-
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -245,12 +241,11 @@
   .home {
     height: calc(100dvh - var(--topbar-height) - 6rem);
     grid-template-columns: minmax(18rem, .84fr) minmax(0, 1.16fr);
-    grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-areas: "header header" "hero quick" "hero recent";
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: "hero quick" "hero recent";
     gap: var(--space-4) var(--space-5);
   }
 
-  .homeHeader { grid-area: header; }
   .hero { grid-area: hero; grid-template-columns: 1fr; align-content: space-between; align-items: stretch; gap: var(--space-8); padding: clamp(var(--space-6), 2.2vw, var(--space-10)); }
   .hero h2 { font-size: clamp(1.5rem, 2vw, 2rem); }
   .hero > a { justify-self: start; }

@@ -48,11 +48,7 @@ export function ConversationHistory() {
 
   return (
     <div className="page-stack">
-      <header className="page-header">
-        <p className="eyebrow">History</p>
-        <h1>会話履歴</h1>
-        <p>次の会話に役立つ要点を、新しい順に振り返れます。</p>
-      </header>
+      <h1 className="visually-hidden">会話履歴</h1>
       {state.status === "loading" ? <section className="surface empty-state" aria-busy="true"><h2>履歴を読み込み中…</h2></section> : null}
       {state.status === "error" ? (
         <section className="surface empty-state" role="alert">

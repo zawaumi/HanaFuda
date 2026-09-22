@@ -117,11 +117,7 @@ export function HomeDashboard() {
 
   return (
     <div className={styles.home}>
-      <header className={`page-header ${styles.homeHeader}`}>
-        <p className="eyebrow">Home</p>
-        <h1>会話の準備</h1>
-        <p>相手や状況に合わせて、話題を選べます。</p>
-      </header>
+      <h1 className="visually-hidden">ホーム</h1>
 
       <section className={`${styles.hero} surface`} aria-labelledby="new-person">
         <div>

@@ -56,22 +56,13 @@ export function ConnectionsDirectory() {
 
   return (
     <div className={styles.directory}>
-      <header className={styles.header}>
-        <div className="page-header">
-          <p className="eyebrow">Connections</p>
-          <h1>つながり</h1>
-          <p>登録した相手を探して、次の会話を準備できます。</p>
-        </div>
-        <Link className="button button-primary" href="/connections/new">
-          新しい相手を登録
-          <span aria-hidden="true">＋</span>
-        </Link>
-      </header>
+      <h1 className="visually-hidden">つながり</h1>
 
       <section className={styles.searchPanel} aria-labelledby="person-search">
-        <label id="person-search" htmlFor="connection-query">
-          相手を検索
-        </label>
+        <div className={styles.searchHeading}>
+          <label id="person-search" htmlFor="connection-query">相手を検索</label>
+          <Link className="button button-primary" href="/connections/new">新しい相手を登録 <span aria-hidden="true">＋</span></Link>
+        </div>
         <div className={styles.searchField}>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="11" cy="11" r="7" />

@@ -1,17 +1,13 @@
 .directory {
   display: grid;
-  gap: clamp(var(--space-8), 5vw, var(--space-12));
+  gap: clamp(var(--space-5), 3vw, var(--space-8));
 }
 
-.header {
+.searchHeading {
   display: flex;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--space-6);
-}
-
-.header > a {
-  flex: 0 0 auto;
+  gap: var(--space-4);
 }
 
 .searchPanel {
@@ -19,7 +15,7 @@
   gap: var(--space-2);
 }
 
-.searchPanel > label {
+.searchHeading label {
   font-size: 0.82rem;
   font-weight: 800;
 }
@@ -258,7 +254,7 @@
 }
 
 @media (max-width: 47.99rem) {
-  .header { align-items: stretch; flex-direction: column; }
+  .searchHeading { align-items: stretch; flex-direction: column; }
   .personCard { align-items: stretch; flex-direction: column; gap: var(--space-4); }
   .actions { display: grid; grid-template-columns: 1fr 1fr; }
   .message { align-items: stretch; flex-direction: column; }
