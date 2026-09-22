@@ -42,7 +42,10 @@ def test_verifier_rejects_invalid_token():
 
 
 def test_jwt_mode_rejects_missing_bearer_token(monkeypatch):
-    monkeypatch.setattr("api.dependencies.get_settings", lambda: Settings(auth_mode="jwt"))
+    monkeypatch.setattr(
+        "api.dependencies.get_settings",
+        lambda: Settings(_env_file=None, AUTH_MODE="jwt"),
+    )
 
     with pytest.raises(HTTPException) as raised:
         get_current_user_id(None, None)
@@ -53,7 +56,11 @@ def test_jwt_mode_rejects_missing_bearer_token(monkeypatch):
 def test_legacy_mode_accepts_only_explicit_local_user_id(monkeypatch):
     monkeypatch.setattr(
         "api.dependencies.get_settings",
-        lambda: Settings(auth_mode="legacy", default_user_id="22222222-2222-2222-2222-222222222222"),
+        lambda: Settings(
+            _env_file=None,
+            AUTH_MODE="legacy",
+            DEFAULT_USER_ID="22222222-2222-2222-2222-222222222222",
+        ),
     )
 
     assert get_current_user_id(None, "11111111-1111-1111-1111-111111111111") == (

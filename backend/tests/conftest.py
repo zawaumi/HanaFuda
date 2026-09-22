@@ -20,7 +20,7 @@ def client(repository: InMemoryRepository) -> TestClient:
     app.dependency_overrides[get_repository] = lambda: repository
     app.dependency_overrides[get_current_user_id] = lambda: "00000000-0000-0000-0000-000000000001"
     app.dependency_overrides[get_deck_service] = lambda: DeckService(
-        Settings(deck_provider="rules")
+        Settings(_env_file=None, DECK_PROVIDER="rules")
     )
     with TestClient(app) as test_client:
         yield test_client
