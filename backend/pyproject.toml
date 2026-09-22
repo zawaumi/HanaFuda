@@ -45,8 +45,25 @@ dependencies = [
     "typing-inspection==0.4.2",
     "urllib3==2.6.3",
     "uvicorn==0.39.0",
-    "uvloop==0.22.1",
     "watchfiles==1.1.1",
     "websockets==15.0.1",
     "supabase==2.24.0",
 ]
+
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8,<9",
+    "ruff>=0.9,<1",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]

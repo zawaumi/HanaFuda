@@ -4,9 +4,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, List, Optional
 
-from pydantic import Field, SecretStr, field_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
-
 
 ENV_FILE = Path(__file__).resolve().parent / ".env"
 
@@ -30,9 +29,34 @@ class Settings(BaseSettings):
         default_factory=lambda: ["http://localhost:3000", "http://127.0.0.1:3000"],
         validation_alias="CORS_ORIGINS",
     )
+    cors_methods: Annotated[List[str], NoDecode] = Field(
+        default_factory=lambda: ["GET", "POST", "PATCH", "OPTIONS"],
+        validation_alias="CORS_ALLOW_METHODS",
+    )
+    cors_headers: Annotated[List[str], NoDecode] = Field(
+        default_factory=lambda: [
+            "Accept",
+            "Authorization",
+            "Content-Type",
+            "X-User-ID",
+            "X-Request-ID",
+        ],
+        validation_alias="CORS_ALLOW_HEADERS",
+    )
+    cors_allow_credentials: bool = Field(
+        default=False, validation_alias="CORS_ALLOW_CREDENTIALS"
+    )
+    allowed_hosts: Annotated[List[str], NoDecode] = Field(
+        default_factory=lambda: ["localhost", "127.0.0.1", "testserver"],
+        validation_alias="ALLOWED_HOSTS",
+    )
     default_user_id: str = Field(
         default="00000000-0000-0000-0000-000000000001",
         validation_alias="DEFAULT_USER_ID",
+    )
+    auth_mode: str = Field(default="jwt", validation_alias="AUTH_MODE")
+    auth_cache_ttl_seconds: int = Field(
+        default=30, ge=0, le=300, validation_alias="AUTH_CACHE_TTL_SECONDS"
     )
     supabase_url: Optional[str] = Field(default=None, validation_alias="SUPABASE_URL")
     supabase_key: Optional[SecretStr] = Field(default=None, validation_alias="SUPABASE_KEY")
@@ -45,7 +69,9 @@ class Settings(BaseSettings):
         default=False, validation_alias="DECK_FALLBACK_ENABLED"
     )
 
-    @field_validator("cors_origins", mode="before")
+    @field_validator(
+        "cors_origins", "cors_methods", "cors_headers", "allowed_hosts", mode="before"
+    )
     @classmethod
     def parse_cors_origins(cls, value: object) -> object:
         if isinstance(value, str):
@@ -61,6 +87,23 @@ class Settings(BaseSettings):
     @property
     def supabase_configured(self) -> bool:
         return bool(self.supabase_url and self.database_key)
+
+    @field_validator("auth_mode")
+    @classmethod
+    def validate_auth_mode(cls, value: str) -> str:
+        normalized = value.strip().lower()
+        if normalized not in {"jwt", "legacy"}:
+            raise ValueError("AUTH_MODE must be 'jwt' or 'legacy'.")
+        return normalized
+
+    @model_validator(mode="after")
+    def validate_production_hosts(self) -> "Settings":
+        local_hosts = {"localhost", "127.0.0.1", "testserver"}
+        if self.app_env.lower() == "production" and not self.allowed_hosts:
+            raise ValueError("ALLOWED_HOSTS must be configured in production.")
+        if self.app_env.lower() == "production" and set(self.allowed_hosts) <= local_hosts:
+            raise ValueError("ALLOWED_HOSTS must include the production host.")
+        return self
 
 
 @lru_cache(maxsize=1)

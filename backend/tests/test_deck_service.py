@@ -38,7 +38,11 @@ def valid_deck_json(card_count: int = 3) -> str:
                         {
                             "condition": "相手が興味を示した場合",
                             "next": "もう少し聞いてもいいですか？",
-                        }
+                        },
+                        {
+                            "condition": "相手が短く答えた場合",
+                            "next": "別の角度から聞いてみましょう。",
+                        },
                     ],
                 }
                 for index in range(card_count)
@@ -112,6 +116,10 @@ class DeckResponseParsingTests(unittest.TestCase):
     def test_rejects_a_deck_with_too_few_cards(self) -> None:
         with self.assertRaises(DeckGenerationError):
             parse_deck_response(valid_deck_json(card_count=2))
+
+    def test_rejects_an_empty_cards_collection(self) -> None:
+        with self.assertRaises(DeckGenerationError):
+            parse_deck_response('{"cards": []}')
 
     def test_repair_prompt_treats_invalid_response_as_data(self) -> None:
         prompt = build_deck_repair_prompt("説明文だけの応答")

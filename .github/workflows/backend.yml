@@ -1,0 +1,54 @@
+name: backend
+
+on:
+  pull_request:
+    paths:
+      - "backend/**"
+      - "docs/api/**"
+      - "docs/backend/**"
+      - "render.yaml"
+      - ".github/workflows/backend.yml"
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - "backend/**"
+      - "docs/api/**"
+      - "docs/backend/**"
+      - "render.yaml"
+      - ".github/workflows/backend.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: backend/.python-version
+      - name: Install locked dependencies
+        run: uv sync --frozen
+      - name: Lint
+        run: uv run ruff check .
+      - name: Test
+        run: uv run pytest -q
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: quality
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Deployment is managed by the hosting provider
+        run: echo "Render deploy hook should be configured after quality passes."
