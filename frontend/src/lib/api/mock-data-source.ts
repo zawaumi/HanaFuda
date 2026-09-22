@@ -1,4 +1,5 @@
 import { ApiError } from "./errors";
+import { readMockProfile, writeMockProfile } from "./mock-profile-storage";
 import {
   mockConversations,
   mockPersonMemories,
@@ -25,11 +26,28 @@ export function createMockDataSource(): HanaFudaDataSource {
 
   return {
     async getProfile() {
+      if (typeof window !== "undefined") {
+        try {
+          user = readMockProfile(window.localStorage, user);
+        } catch {
+          // Browsers can disable local storage; the in-memory mock still works.
+        }
+      }
       return clone(user);
     },
 
     async updateProfile(input) {
-      user = { ...user, ...input, updated_at: new Date().toISOString() };
+      const next = { ...user, ...input, updated_at: new Date().toISOString() };
+      if (typeof window !== "undefined") {
+        try {
+          writeMockProfile(window.localStorage, next);
+        } catch {
+          throw new ApiError("ブラウザーに保存できませんでした。保存領域の設定を確認してください。", {
+            kind: "network",
+          });
+        }
+      }
+      user = next;
       return clone(user);
     },
 
