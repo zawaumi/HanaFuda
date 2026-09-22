@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "name": "hanafuda-backend",
+  "watch": [
+    "backend",
+    "docs/api",
+    "docs/backend",
+    "README.md",
+    "render.yaml",
+    ".github/workflows/backend.yml"
+  ],
+  "risk_paths": [
+    "backend/api",
+    "backend/config.py",
+    "backend/supabase/migrations",
+    "docs/api",
+    "render.yaml",
+    ".github/workflows"
+  ],
+  "environment_keys": [
+    "APP_ENV",
+    "DECK_PROVIDER",
+    "CORS_ORIGINS",
+    "SUPABASE_URL",
+    "ORCAROUTER_MODEL"
+  ],
+  "checks": [
+    {
+      "id": "backend-tests",
+      "argv": ["uv", "run", "pytest", "-q"],
+      "cwd": "backend",
+      "timeout_seconds": 120,
+      "required": true
+    },
+    {
+      "id": "backend-lint",
+      "argv": ["env", "RUFF_CACHE_DIR=/tmp/hanafuda-ruff-cache", "uv", "run", "ruff", "check", "."],
+      "cwd": "backend",
+      "timeout_seconds": 120,
+      "required": true
+    },
+    {
+      "id": "backend-compile",
+      "argv": ["python3", "-m", "compileall", "-q", "."],
+      "cwd": "backend",
+      "timeout_seconds": 120,
+      "required": true
+    },
+    {
+      "id": "git-diff-check",
+      "argv": ["git", "diff", "--check"],
+      "cwd": ".",
+      "timeout_seconds": 30,
+      "required": true
+    }
+  ]
+}

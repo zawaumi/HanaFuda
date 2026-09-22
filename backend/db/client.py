@@ -3,9 +3,8 @@
 from functools import lru_cache
 from typing import Any, Optional
 
-from supabase import Client, create_client
-
 from config import Settings, get_settings
+from supabase import Client, create_client
 
 
 class DatabaseConfigurationError(RuntimeError):
