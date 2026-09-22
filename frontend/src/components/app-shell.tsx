@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { isAuthEnabled, isSupabaseConfigured } from "@/lib/supabase/config";
 import { SeasonMark, seasonForIndex } from "@/lib/season";
 import styles from "./app-shell.module.css";
 
@@ -53,7 +53,7 @@ function SignOutButton() {
   const router = useRouter();
   const [pending, setPending] = useState(false);
 
-  if (!isSupabaseConfigured) return null;
+  if (!isAuthEnabled || !isSupabaseConfigured) return null;
 
   async function signOut() {
     setPending(true);

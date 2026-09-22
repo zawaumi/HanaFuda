@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { getSupabaseConfig, isSupabaseConfigured } from "@/lib/supabase/config";
+import { getSupabaseConfig, isAuthEnabled, isSupabaseConfigured } from "@/lib/supabase/config";
 
 const publicPaths = ["/login", "/signup", "/auth"];
 
@@ -10,6 +10,8 @@ function isPublic(pathname: string) {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (!isAuthEnabled) return NextResponse.next();
 
   // Without project credentials there is no way to establish a session, so every
   // protected route is sent to the login page rather than served signed out.

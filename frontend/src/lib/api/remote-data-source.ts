@@ -62,7 +62,8 @@ export function createRemoteDataSource(): HanaFudaDataSource {
       const confirmedMemories = (input.memories ?? []).filter((memory) => memory.confirmed);
       return apiFetch<GenerateDeckResult>("/api/deck/generate", {
         method: "POST",
-        timeoutMs: 60_000,
+        // Measured ~134s against orcarouter/auto, so this sits above the backend's own timeout.
+        timeoutMs: 180_000,
         body: {
           user: {
             name: input.user.name,
