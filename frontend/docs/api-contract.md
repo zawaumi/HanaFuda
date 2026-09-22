@@ -53,4 +53,12 @@ const persons = await dataSource.getPersons({ search: "佐藤" });
 | `GET` / `POST` | `/api/persons/{person_id}/memories` | 記憶一覧・保存 |
 | `GET` / `PATCH` | `/api/profile` | 自分のプロフィール |
 
-FastAPIのOpenAPIが利用可能になったら、リクエスト・レスポンスの型を照合し、この文書との差分を解消してから画面へ接続します。
+## 実装との照合（2026-09-22）
+
+`origin/develop` の FastAPI `schemas/models.py`・`schemas/deck.py`・`api/routers.py` と照合済み。相手・会話・記憶のIDはUUID文字列、日時はISO 8601文字列で扱います。デッキ生成は `user`、`person`、`context`、`history` を送信し、履歴ごとに確認済み記憶を紐づけます。生成レスポンスは `summary` と3〜5枚の `cards` です。
+
+実API利用時は `NEXT_PUBLIC_API_MODE=remote`、`NEXT_PUBLIC_API_BASE_URL=http://localhost:8000`。FastAPIのCORS既定値は `http://localhost:3000` と `http://127.0.0.1:3000` です。別ポート・別ホストのフロントを使う場合はバックエンドの `CORS_ORIGINS` にそのoriginを追加してください。認証は現状デモ用既定ユーザーで、ブラウザから秘密鍵やSupabase/LLMへ直接接続しません。
+
+API呼び出しはタイムアウトを区別し、デッキ生成のみ60秒、通常リクエストは10秒とします。401/404/422/5xxは日本語の案内に統一し、422の詳細は `ApiError.details` に保持します。
+
+結合実行にはバックエンドのDB接続設定とデッキ生成プロバイダーが必要です。ローカルに `backend/.env` がないため、実サービスを使った登録〜履歴反映の通し確認は未実施です。バックエンド環境が揃い次第、#24 のPRで実データのスモーク確認を行います。

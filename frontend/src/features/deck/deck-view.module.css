@@ -1,0 +1,107 @@
+.page { display: grid; gap: var(--space-6); }
+.header { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-8); }
+.summary { max-width: 38rem; margin: 0; color: var(--color-muted); line-height: 1.8; }
+.deckCount { display: grid; min-width: 5rem; padding-bottom: .2rem; color: var(--color-primary-strong); text-align: right; line-height: 1; }
+.deckCount strong { font-family: var(--font-display); font-size: 2.25rem; font-weight: 600; }
+.deckCount span { margin-top: .4rem; color: var(--color-muted); font-size: .6875rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding-block: var(--space-2); color: var(--color-muted); font-size: .8125rem; }
+.toolbar button { min-height: 2.5rem; padding: 0 var(--space-4); border: .0625rem solid var(--color-line-strong); border-radius: 999px; background: var(--color-surface); color: var(--color-primary-strong); font-size: .8125rem; font-weight: 500; cursor: pointer; transition: border-color 180ms ease, background-color 180ms ease; }
+.toolbar button:hover:not(:disabled) { border-color: var(--color-primary); background: var(--color-primary-soft); }
+.toolbar button:disabled { opacity: .6; cursor: wait; }
+.error { margin: 0; color: var(--color-danger); }
+
+.experience { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(19rem, .9fr); gap: var(--space-4); align-items: stretch; }
+.stage { position: relative; min-width: 0; min-height: 31rem; overflow: hidden; border-radius: var(--radius-lg); background: radial-gradient(circle at 50% 42%, #24403a 0, #16241f 68%); }
+.stage::before { position: absolute; top: 18%; left: 50%; width: min(26rem, 80%); aspect-ratio: 1; border: .0625rem solid rgb(255 255 255 / 7%); border-radius: 50%; content: ""; transform: translateX(-50%); }
+.stage::after { position: absolute; right: -5rem; bottom: -7rem; width: 15rem; aspect-ratio: 1; border: .0625rem solid rgb(255 255 255 / 5%); border-radius: 50%; content: ""; pointer-events: none; }
+.stageCaption { position: relative; z-index: 1; display: flex; justify-content: space-between; gap: var(--space-3); padding: var(--space-6); color: rgb(244 242 234 / 52%); font-size: .6875rem; font-weight: 700; letter-spacing: .1em; }
+.stageCaption span:last-child { font-weight: 400; letter-spacing: .02em; }
+.hand { position: relative; z-index: 1; height: 25rem; margin: 0; padding: 0; list-style: none; }
+.handItem { position: absolute; top: 1.75rem; left: 50%; z-index: var(--order); width: 11rem; aspect-ratio: 5 / 8; perspective: 62.5rem; transform: translateX(calc(-50% + var(--spread))) translateY(var(--rise)) rotate(var(--tilt)); transform-origin: 50% 92%; transition: transform 360ms cubic-bezier(.2, .8, .2, 1); }
+.handItem:hover, .handItem:focus-within, .handItem.selected { z-index: 20; transform: translateX(calc(-50% + var(--spread))) translateY(calc(var(--rise) - 1.6rem)) rotate(var(--tilt)); }
+
+/* Card stock: cream paper, a hairline inner frame, the season mark in the corner. */
+.handCard { position: relative; display: flex; flex-direction: column; width: 100%; height: 100%; padding: 1.4rem 1.05rem 1.05rem; overflow: hidden; border: .0625rem solid #d9d3c3; border-radius: .5rem; background: #fffcf4; color: var(--color-ink); box-shadow: 0 1rem 2rem rgb(0 0 0 / 30%), 0 .125rem .375rem rgb(0 0 0 / 20%); text-align: left; cursor: pointer; animation: deal 520ms both cubic-bezier(.2, .8, .2, 1); animation-delay: var(--delay); transition: box-shadow 250ms ease, border-color 250ms ease; }
+.handCard::before { position: absolute; inset: 0; background-image: var(--washi); content: ""; opacity: .05; pointer-events: none; }
+.cardFrame { position: absolute; inset: .3125rem; border: .0625rem solid color-mix(in srgb, var(--suit) 30%, transparent); border-radius: .3125rem; pointer-events: none; }
+.handItem.selected .handCard { border-color: var(--suit); box-shadow: 0 1.4rem 2.6rem rgb(0 0 0 / 36%), 0 0 0 .125rem var(--suit); }
+.handItem.selected .cardFrame { border-color: color-mix(in srgb, var(--suit) 58%, transparent); }
+.handCard:hover { box-shadow: 0 1.5rem 2.75rem rgb(0 0 0 / 36%); }
+.handCard:focus-visible { outline: .1875rem solid var(--color-accent); outline-offset: .25rem; }
+
+.cardTop { position: relative; display: flex; align-items: center; justify-content: space-between; gap: .4rem; }
+.cardMark { display: block; width: 1.5rem; color: var(--suit); }
+.cardMark svg { display: block; width: 100%; height: auto; }
+.cardPick { padding: .2rem .45rem; border-radius: 999px; background: color-mix(in srgb, var(--suit) 12%, transparent); color: var(--suit); font-size: .625rem; font-weight: 700; letter-spacing: .04em; }
+
+.cardBody { position: relative; display: grid; align-content: center; flex: 1; min-height: 0; gap: .55rem; }
+.cardBody strong { display: -webkit-box; overflow: hidden; color: var(--color-ink); font-size: 1.0625rem; font-weight: 700; line-height: 1.55; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.cardPreview { display: -webkit-box; overflow: hidden; color: var(--color-muted); font-size: .72rem; line-height: 1.7; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.cardFoot { position: relative; padding-top: .55rem; border-top: .0625rem solid #eae4d5; color: var(--color-muted); font-size: .625rem; letter-spacing: .1em; text-align: right; }
+.stageHint { position: absolute; right: var(--space-6); bottom: var(--space-5); left: var(--space-6); z-index: 1; margin: 0; color: rgb(244 242 234 / 48%); font-size: .6875rem; text-align: center; }
+.mobileHint { display: none; }
+
+.detail { display: flex; flex-direction: column; min-width: 0; min-height: 31rem; padding: clamp(var(--space-6), 3vw, var(--space-8)); border: .0625rem solid var(--color-line); border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-sm); animation: reveal 320ms both ease-out; }
+.detailTop { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding-bottom: var(--space-4); border-bottom: .0625rem solid var(--color-line); color: var(--color-muted); font-size: .6875rem; font-weight: 700; letter-spacing: .1em; }
+.detailSuit { display: flex; align-items: center; gap: .5rem; }
+.detailSuitMark { display: block; width: 1.25rem; color: var(--suit); }
+.detailSuitMark svg { display: block; width: 100%; height: auto; }
+.detailEyebrow { margin: var(--space-6) 0 var(--space-2); color: var(--color-muted); font-size: .6875rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.detail h2 { margin: 0; color: var(--color-ink); font-size: clamp(1.25rem, 2.2vw, 1.625rem); font-weight: 700; line-height: 1.5; }
+.starter { margin: var(--space-5) 0; padding-left: var(--space-4); border-left: .1875rem solid var(--suit); color: var(--color-ink); font-size: clamp(1rem, 1.6vw, 1.125rem); font-weight: 400; line-height: 1.9; }
+.detailExtras { display: grid; margin-top: var(--space-2); }
+.detailExtras details { padding: var(--space-4) 0; border-top: .0625rem solid var(--color-line); }
+.detailExtras summary { color: var(--color-primary-strong); font-size: .875rem; font-weight: 500; cursor: pointer; }
+.detailExtras summary:hover { text-decoration: underline; text-underline-offset: .2rem; }
+.detailExtras ul { display: grid; gap: var(--space-4); margin: var(--space-4) 0 0; padding-left: var(--space-5); }
+.detailExtras li strong { color: var(--color-ink); font-size: .84rem; }
+.detailExtras li p, .detailExtras details > p { margin: var(--space-2) 0 0; color: var(--color-muted); font-size: .85rem; line-height: 1.7; }
+.selectionNotice { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+.footer { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-4); padding-top: var(--space-2); }
+.footer :global(.button) { gap: var(--space-6); }
+.missing { padding: var(--space-8); }
+
+/* Cards arrive face-turned, then settle flat, like a hand being dealt. */
+@keyframes deal {
+  0% { opacity: 0; transform: translateY(2.25rem) rotateY(-78deg) scale(.94); }
+  55% { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0) rotateY(0deg) scale(1); }
+}
+@keyframes reveal { from { opacity: 0; transform: translateY(.65rem); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 79.99rem) {
+  .experience { grid-template-columns: 1fr; }
+  .stage { min-height: 29rem; }
+  .detail { min-height: 0; }
+}
+
+@media (max-width: 47.99rem) {
+  .page { gap: var(--space-5); }
+  .header { align-items: flex-start; }
+  .deckCount { min-width: 4.5rem; }
+  .deckCount strong { font-size: 2rem; }
+  .deckCount span { white-space: nowrap; }
+  .toolbar { align-items: stretch; flex-direction: column; }
+  .toolbar button { align-self: flex-start; }
+  .stage { min-height: 22rem; }
+  .stage::before { top: 26%; }
+  .stageCaption { padding: var(--space-5) var(--space-4) 0; }
+  .hand { display: flex; gap: var(--space-3); height: auto; overflow-x: auto; padding: var(--space-8) var(--space-4) var(--space-10); scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  .handItem, .handItem:hover, .handItem:focus-within, .handItem.selected { position: relative; top: auto; left: auto; flex: 0 0 10.5rem; width: 10.5rem; height: auto; transform: none; scroll-snap-align: center; }
+  .handCard { padding: 1.15rem .85rem .85rem; }
+  .cardMark { width: 1.25rem; }
+
+  .cardBody { gap: .45rem; }
+  .cardBody strong { font-size: .9375rem; }
+  .cardPreview { font-size: .6875rem; -webkit-line-clamp: 2; }
+  .stageHint { right: var(--space-4); bottom: var(--space-3); left: var(--space-4); }
+  .desktopHint { display: none; }
+  .mobileHint { display: inline; }
+  .detail { padding: var(--space-6); }
+  .detailEyebrow { margin-top: var(--space-6); }
+  .footer { align-items: stretch; flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .handItem, .handCard, .detail, .toolbar button { animation: none; transition: none; }
+}

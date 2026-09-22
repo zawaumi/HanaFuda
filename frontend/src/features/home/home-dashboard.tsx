@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 import {
   dataSource,
   isApiError,
   type Conversation,
   type Person,
 } from "@/lib/api";
+import { SeasonMark, seasonForIndex } from "@/lib/season";
 import styles from "./home-dashboard.module.css";
 
 const quickTopics = [
@@ -117,14 +118,10 @@ export function HomeDashboard() {
 
   return (
     <div className={styles.home}>
-      <header className="page-header">
-        <p className="eyebrow">Home</p>
-        <h1>次の会話を、少し気楽に。</h1>
-        <p>会う直前でも、相手に合った話題をすぐ準備できます。</p>
-      </header>
+      <h1 className="visually-hidden">ホーム</h1>
 
       <section className={`${styles.hero} surface`} aria-labelledby="new-person">
-        <div>
+        <div className={styles.heroText}>
           <span className="status-chip">初めて会う人</span>
           <h2 id="new-person">相手を登録して、会話を準備</h2>
           <p>名前と関係だけでも始められます。詳しい情報は後から追加できます。</p>
@@ -133,9 +130,23 @@ export function HomeDashboard() {
           相手を登録する
           <span aria-hidden="true">›</span>
         </Link>
+        <span className={styles.heroDeck} aria-hidden="true">
+          {[0, 1, 2].map((offset) => {
+            const season = seasonForIndex(offset);
+            return (
+              <span
+                className={styles.heroCard}
+                key={season.id}
+                style={{ "--suit": season.color, "--index": offset } as CSSProperties}
+              >
+                <SeasonMark season={season} />
+              </span>
+            );
+          })}
+        </span>
       </section>
 
-      <section className={styles.section} aria-labelledby="quick-topics">
+      <section className={`${styles.section} ${styles.quickSection}`} aria-labelledby="quick-topics">
         <div className={styles.sectionHeading}>
           <div>
             <p className={styles.sectionLabel}>QUICK TOPICS</p>
@@ -144,17 +155,26 @@ export function HomeDashboard() {
           <p>相手を登録せず、そのまま使える話題です。</p>
         </div>
         <ol className={styles.topicGrid}>
-          {quickTopics.map((topic, index) => (
-            <li className={`${styles.topicCard} surface`} key={topic.label}>
-              <span className={styles.topicNumber}>0{index + 1}</span>
-              <h3>{topic.label}</h3>
-              <p>「{topic.starter}」</p>
-            </li>
-          ))}
+          {quickTopics.map((topic, index) => {
+            const season = seasonForIndex(index);
+            return (
+              <li
+                className={`${styles.topicCard} surface`}
+                key={topic.label}
+                style={{ "--suit": season.color } as CSSProperties}
+              >
+                <span className={styles.topicMark} aria-hidden="true">
+                  <SeasonMark season={season} />
+                </span>
+                <h3>{topic.label}</h3>
+                <p>「{topic.starter}」</p>
+              </li>
+            );
+          })}
         </ol>
       </section>
 
-      <section className={styles.section} aria-labelledby="recent-people">
+      <section className={`${styles.section} ${styles.recentSection}`} aria-labelledby="recent-people">
         <div className={styles.sectionHeading}>
           <div>
             <p className={styles.sectionLabel}>RECENT</p>

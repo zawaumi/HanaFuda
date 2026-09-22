@@ -58,9 +58,39 @@ export function createRemoteDataSource(): HanaFudaDataSource {
     },
 
     generateDeck(input) {
+      // A draft saved before memories were added may still exist in sessionStorage.
+      const confirmedMemories = (input.memories ?? []).filter((memory) => memory.confirmed);
       return apiFetch<GenerateDeckResult>("/api/deck/generate", {
         method: "POST",
-        body: input,
+        // Measured ~134s against orcarouter/auto, so this sits above the backend's own timeout.
+        timeoutMs: 180_000,
+        body: {
+          user: {
+            name: input.user.name,
+            status: input.user.status,
+            interests: input.user.interests,
+            recent: input.user.recent,
+            avoid_topics: input.user.avoid_topics,
+          },
+          person: input.person && {
+            id: input.person.id,
+            name: input.person.name,
+            relationship: input.person.relationship,
+            known_information: input.person.known_information,
+          },
+          context: input.context,
+          history: input.history.map((conversation) => ({
+            created_at: conversation.created_at,
+            purpose: conversation.purpose,
+            situation: conversation.situation,
+            extra: conversation.extra,
+            rating: conversation.rating,
+            memo: conversation.memo,
+            memories: confirmedMemories
+              .filter((memory) => memory.source_conversation_id === conversation.id)
+              .map((memory) => ({ content: memory.content, created_at: memory.created_at })),
+          })),
+        },
       });
     },
 

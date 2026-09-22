@@ -36,21 +36,35 @@
   gap: var(--space-3);
   padding: 0 var(--space-2);
   color: white;
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
 }
 
+/* The brand mark is a card: cream stock, hairline inner frame, one season mark. */
 .brandMark {
+  position: relative;
   display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 1.625rem;
+  aspect-ratio: 5 / 8;
   place-items: center;
-  border-radius: var(--radius-md);
-  background: var(--color-primary);
-  color: white;
-  font-size: 1.1rem;
-  box-shadow: var(--shadow-sm);
+  border-radius: 0.1875rem;
+  background: #fffcf4;
+  color: var(--color-accent);
+}
+
+.brandMark svg {
+  display: block;
+  width: 0.875rem;
+  height: auto;
+}
+
+.brandMark::before {
+  position: absolute;
+  inset: 0.125rem;
+  border: 0.0625rem solid rgb(181 133 60 / 45%);
+  border-radius: 0.0625rem;
+  content: "";
 }
 
 .navigation {
@@ -67,15 +81,16 @@
   padding: var(--space-3);
   border-radius: var(--radius-md);
   color: var(--color-navigation-muted);
-  font-size: 0.9rem;
-  font-weight: 700;
-  transition: background-color 150ms ease, color 150ms ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 190ms ease, color 190ms ease, transform 190ms ease;
 }
 
-.navLink:hover { background: rgb(255 255 255 / 8%); color: white; }
-.navLink.active { background: var(--color-primary); color: white; box-shadow: var(--shadow-sm); }
+.navLink:hover { background: rgb(255 255 255 / 6%); color: white; }
+.navLink.active { background: rgb(255 255 255 / 9%); color: white; font-weight: 700; box-shadow: inset 0.125rem 0 0 var(--color-accent); }
+.navLink:hover .navIcon { transform: translateX(.16rem); }
 
-.navIcon { display: grid; width: 1.35rem; height: 1.35rem; place-items: center; }
+.navIcon { display: grid; width: 1.35rem; height: 1.35rem; place-items: center; transition: transform 190ms ease; }
 .navIcon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
 
 .workspace { grid-column: 2; min-width: 0; }
@@ -89,13 +104,18 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 clamp(var(--space-5), 4vw, var(--space-10));
-  border-bottom: 1px solid var(--color-line);
-  background: rgb(248 250 252 / 88%);
+  border-bottom: 0.0625rem solid var(--color-line);
+  background: rgb(246 244 239 / 82%);
   backdrop-filter: blur(0.75rem);
 }
 
-.topbarLabel { color: var(--color-muted); font-size: 0.82rem; font-weight: 700; }
-.profileLink { color: var(--color-primary-strong); font-size: .875rem; font-weight: 800; }
+.topbarLabel { color: var(--color-muted); font-size: 0.8125rem; font-weight: 400; letter-spacing: 0.04em; }
+.topbarActions { display: flex; align-items: center; gap: var(--space-5); }
+.signOut { border: 0; background: transparent; color: var(--color-muted); font-size: .8125rem; cursor: pointer; }
+.signOut:hover { color: var(--color-ink); }
+.signOut:disabled { cursor: wait; opacity: .6; }
+.profileLink { color: var(--color-primary-strong); font-size: .875rem; font-weight: 500; }
+.profileLink:hover { text-decoration: underline; text-underline-offset: .25rem; }
 .content { width: min(100%, var(--content-max)); margin-inline: auto; padding: clamp(var(--space-6), 5vw, var(--space-12)); }
 .mobileNavigation { display: none; }
 
@@ -115,14 +135,15 @@
     grid-template-columns: repeat(3, 1fr);
     padding: var(--space-2) max(var(--space-2), env(safe-area-inset-right)) max(var(--space-2), env(safe-area-inset-bottom)) max(var(--space-2), env(safe-area-inset-left));
     border-top: 1px solid var(--color-line);
-    background: rgb(255 255 255 / 94%);
+    background: rgb(255 254 250 / 94%);
     backdrop-filter: blur(0.75rem);
-    box-shadow: 0 -0.5rem 1.5rem rgb(15 23 42 / 6%);
+    box-shadow: 0 -0.5rem 1.5rem rgb(33 52 43 / 6%);
   }
 
   .mobileNavigation .navLink { flex-direction: column; justify-content: center; gap: 0.2rem; min-height: 3.25rem; padding: var(--space-1); color: var(--color-muted); font-size: 0.68rem; }
-  .mobileNavigation .navLink:hover, .mobileNavigation .navLink.active { background: var(--color-primary-soft); color: var(--color-primary); box-shadow: none; }
+  .mobileNavigation .navLink:hover, .mobileNavigation .navLink.active { background: var(--color-primary-soft); color: var(--color-primary-strong); box-shadow: none; }
+  .mobileNavigation .navLink:hover .navIcon { transform: translateY(-.1rem); }
   .mobileNavigation .navIcon { width: 1.25rem; height: 1.25rem; }
 }
 
-@media (prefers-reduced-motion: reduce) { .navLink { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .navLink, .navIcon { transition: none; } }

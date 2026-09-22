@@ -1,5 +1,6 @@
 import { apiConfig } from "./config";
 import { ApiError, type ApiErrorKind } from "./errors";
+import { getAuthorizationHeader } from "./auth-header";
 
 type ApiRequestOptions = Omit<RequestInit, "body"> & {
   body?: unknown;
@@ -21,11 +22,11 @@ function errorKindForStatus(status: number): ApiErrorKind {
 }
 
 function errorMessageForStatus(status: number): string {
-  if (status === 401) return "認証が必要です。";
-  if (status === 404) return "対象が見つかりません。";
-  if (status === 422) return "入力内容を確認してください。";
-  if (status >= 500) return "サーバーで問題が発生しました。";
-  return `API request failed with status ${status}.`;
+  if (status === 401) return "認証が必要です。ログイン状態を確認してください。";
+  if (status === 404) return "対象が見つかりません。一覧から選び直してください。";
+  if (status === 422) return "入力内容を確認し、修正してから再度お試しください。";
+  if (status >= 500) return "サーバーで問題が発生しました。時間をおいて再度お試しください。";
+  return `通信に失敗しました（${status}）。時間をおいて再度お試しください。`;
 }
 
 async function readResponseBody(response: Response): Promise<unknown> {
@@ -68,6 +69,9 @@ export function createApiClient(options: ApiClientOptions = {}) {
     const headers = new Headers(request.headers);
     headers.set("Accept", "application/json");
     if (request.body !== undefined) headers.set("Content-Type", "application/json");
+
+    const authorization = await getAuthorizationHeader();
+    if (authorization) headers.set("Authorization", authorization);
 
     try {
       const response = await fetcher(`${baseUrl}${path}`, {

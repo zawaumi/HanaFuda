@@ -115,7 +115,6 @@ export function PersonDetail({ personId }: { personId: string }) {
           {state.person.name.slice(0, 1)}
         </span>
         <div className={styles.profileText}>
-          <p className="eyebrow">Connection</p>
           <h1>{state.person.name}</h1>
           <span className={styles.relationship}>{state.person.relationship}</span>
         </div>
@@ -252,7 +251,6 @@ function StatusCard({
   return (
     <div className={styles.statusPage} role={alert ? "alert" : undefined}>
       <section className={`${styles.statusCard} surface`}>
-        <p className="eyebrow">Connection</p>
         <h1>{title}</h1>
         <p>{description}</p>
         <div>{action}</div>

@@ -75,6 +75,7 @@ export interface GenerateDeckInput {
   person: Person | null;
   context: ConversationContext;
   history: Conversation[];
+  memories: PersonMemory[];
 }
 
 export interface GenerateDeckResult {

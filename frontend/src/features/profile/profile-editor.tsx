@@ -26,6 +26,7 @@ export function ProfileEditor() {
   const [saved, setSaved] = useState<Values | null>(null);
   const [message, setMessage] = useState("");
   const pending = useRef(false);
+  const [reload, setReload] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -41,7 +42,7 @@ export function ProfileEditor() {
       setState("error");
     });
     return () => { active = false; };
-  }, []);
+  }, [reload]);
 
   const dirty = saved !== null && JSON.stringify(values) !== JSON.stringify(saved);
 
@@ -74,11 +75,11 @@ export function ProfileEditor() {
   }
 
   if (state === "loading") return <p className={styles.notice} aria-busy="true">プロフィールを読み込み中…</p>;
-  if (state === "error") return <div className={styles.notice} role="alert">{message}</div>;
+  if (state === "error") return <div className={styles.notice} role="alert">{message} <button type="button" onClick={() => { setState("loading"); setReload((value) => value + 1); }}>もう一度試す</button></div>;
 
   return (
     <div className={styles.page}>
-      <header className="page-header"><p className="eyebrow">Profile</p><h1>自分のプロフィール</h1><p>話題づくりに使う情報を編集できます。</p></header>
+      <h1 className="visually-hidden">自分のプロフィール</h1>
       <form className={`${styles.form} surface`} onSubmit={submit}>
         <label>所属・立場<input className="field" value={values.status} maxLength={200} onChange={(event) => setValues({ ...values, status: event.target.value })} placeholder="例: 学生" disabled={state === "saving"} /></label>
         <label>興味 <small>読点またはカンマで区切る</small><textarea className="field" value={values.interests} onChange={(event) => setValues({ ...values, interests: event.target.value })} placeholder="例: 音楽、旅行" disabled={state === "saving"} /></label>
