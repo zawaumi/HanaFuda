@@ -78,7 +78,7 @@ export function ConversationHistory() {
                 {conversation.memo ? <div><dt>振り返り</dt><dd>{conversation.memo}</dd></div> : null}
                 {memories.length > 0 ? <div><dt>新しく記録したこと</dt><dd><ul>{memories.map((memory) => <li key={memory.id}>{memory.content}</li>)}</ul></dd></div> : null}
               </dl>
-              {person ? <Link className={styles.link} href={`/connections/${person.id}`}>{person.name}さんの詳細を見る <span aria-hidden="true">›</span></Link> : null}
+              {person ? <Link className={styles.link} href={`/connections/${person.id}`}>{person.name}の詳細を見る <span aria-hidden="true">›</span></Link> : null}
             </li>;
           })}
         </ol>

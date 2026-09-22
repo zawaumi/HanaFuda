@@ -61,10 +61,10 @@ export function ConversationFeedback() {
 
   if (!ready) return <p aria-busy="true">会話記録を読み込み中…</p>;
   if (!draft || !loadDeckResult()) return <section className={`${styles.panel} surface`}><h1>会話デッキがありません</h1><Link href="/connections">つながりへ戻る</Link></section>;
-  if (saved) return <section className={`${styles.panel} surface`} aria-live="polite"><p className="eyebrow">Saved</p><h1>会話を記録しました</h1><p>次の会話の準備に、この記録を使えます。</p><div className={styles.actions}><Link className="button button-primary" href="/">ホームへ戻る</Link>{draft.person && <Link href={`/connections/${draft.person.id}`}>相手の詳細を見る</Link>}</div></section>;
+  if (saved) return <section className={`${styles.panel} surface`} aria-live="polite"><h1>会話を記録しました</h1><p>次の会話の準備に、この記録を使えます。</p><div className={styles.actions}><Link className="button button-primary" href="/">ホームへ戻る</Link>{draft.person && <Link href={`/connections/${draft.person.id}`}>相手の詳細を見る</Link>}</div></section>;
 
   return <div className={styles.page}>
-    <header className="page-header"><p className="eyebrow">Feedback</p><h1>会話を振り返る</h1><p>短い評価とメモを残すと、次の話題づくりに役立ちます。</p></header>
+    <h1 className="visually-hidden">会話を振り返る</h1>
     <form className={`${styles.form} surface`} onSubmit={submit} noValidate>
       <fieldset disabled={saving}><legend>会話はどうでしたか？</legend><div className={styles.ratings}>{ratings.map((option) => <label key={option.value}><input type="radio" name="rating" checked={rating === option.value} onChange={() => { setRating(option.value); setRatingError(""); }} /><span>{option.label}</span></label>)}</div></fieldset>
       {ratingError && <p className={styles.error} role="alert">{ratingError}</p>}

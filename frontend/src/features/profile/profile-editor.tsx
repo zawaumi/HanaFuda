@@ -79,7 +79,7 @@ export function ProfileEditor() {
 
   return (
     <div className={styles.page}>
-      <header className="page-header"><p className="eyebrow">Profile</p><h1>自分のプロフィール</h1><p>話題づくりに使う情報を編集できます。</p></header>
+      <h1 className="visually-hidden">自分のプロフィール</h1>
       <form className={`${styles.form} surface`} onSubmit={submit}>
         <label>所属・立場<input className="field" value={values.status} maxLength={200} onChange={(event) => setValues({ ...values, status: event.target.value })} placeholder="例: 学生" disabled={state === "saving"} /></label>
         <label>興味 <small>読点またはカンマで区切る</small><textarea className="field" value={values.interests} onChange={(event) => setValues({ ...values, interests: event.target.value })} placeholder="例: 音楽、旅行" disabled={state === "saving"} /></label>

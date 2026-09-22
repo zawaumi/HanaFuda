@@ -26,9 +26,7 @@
   display: flex;
   flex-direction: column;
   padding: var(--space-6) var(--space-4);
-  background:
-    radial-gradient(circle at 10% 0, rgb(123 164 133 / 16%), transparent 22rem),
-    var(--color-navigation);
+  background: var(--color-navigation);
   color: var(--color-navigation-text);
 }
 
@@ -38,21 +36,35 @@
   gap: var(--space-3);
   padding: 0 var(--space-2);
   color: white;
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
 }
 
+/* The brand mark is a card: cream stock, hairline inner frame, one season mark. */
 .brandMark {
+  position: relative;
   display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 1.625rem;
+  aspect-ratio: 5 / 8;
   place-items: center;
-  border-radius: var(--radius-md);
-  background: var(--color-accent);
-  color: var(--color-accent-ink);
-  font-size: 1.1rem;
-  box-shadow: var(--shadow-sm);
+  border-radius: 0.1875rem;
+  background: #fffcf4;
+  color: var(--color-accent);
+}
+
+.brandMark svg {
+  display: block;
+  width: 0.875rem;
+  height: auto;
+}
+
+.brandMark::before {
+  position: absolute;
+  inset: 0.125rem;
+  border: 0.0625rem solid rgb(181 133 60 / 45%);
+  border-radius: 0.0625rem;
+  content: "";
 }
 
 .navigation {
@@ -69,13 +81,13 @@
   padding: var(--space-3);
   border-radius: var(--radius-md);
   color: var(--color-navigation-muted);
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: 0.875rem;
+  font-weight: 500;
   transition: background-color 190ms ease, color 190ms ease, transform 190ms ease;
 }
 
-.navLink:hover { background: rgb(255 255 255 / 8%); color: white; }
-.navLink.active { background: rgb(168 210 184 / 17%); color: white; box-shadow: inset 2px 0 0 var(--color-accent); }
+.navLink:hover { background: rgb(255 255 255 / 6%); color: white; }
+.navLink.active { background: rgb(255 255 255 / 9%); color: white; font-weight: 700; box-shadow: inset 0.125rem 0 0 var(--color-accent); }
 .navLink:hover .navIcon { transform: translateX(.16rem); }
 
 .navIcon { display: grid; width: 1.35rem; height: 1.35rem; place-items: center; transition: transform 190ms ease; }
@@ -92,13 +104,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 clamp(var(--space-5), 4vw, var(--space-10));
-  border-bottom: 1px solid var(--color-line);
-  background: rgb(250 249 244 / 88%);
+  border-bottom: 0.0625rem solid var(--color-line);
+  background: rgb(246 244 239 / 82%);
   backdrop-filter: blur(0.75rem);
 }
 
-.topbarLabel { color: var(--color-muted); font-size: 0.82rem; font-weight: 700; }
-.profileLink { color: var(--color-primary-strong); font-size: .875rem; font-weight: 800; }
+.topbarLabel { color: var(--color-muted); font-size: 0.8125rem; font-weight: 400; letter-spacing: 0.04em; }
+.profileLink { color: var(--color-primary-strong); font-size: .875rem; font-weight: 500; }
 .profileLink:hover { text-decoration: underline; text-underline-offset: .25rem; }
 .content { width: min(100%, var(--content-max)); margin-inline: auto; padding: clamp(var(--space-6), 5vw, var(--space-12)); }
 .mobileNavigation { display: none; }

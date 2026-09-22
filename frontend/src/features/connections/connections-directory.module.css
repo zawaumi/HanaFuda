@@ -16,26 +16,25 @@
 }
 
 .searchHeading label {
-  font-size: 0.82rem;
-  font-weight: 800;
+  font-size: 0.8125rem;
+  font-weight: 500;
 }
 
 .searchField {
-  min-height: 3.5rem;
+  min-height: 3rem;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--space-3);
   padding: 0 var(--space-4);
-  border: 0.0625rem solid var(--color-line);
-  border-radius: var(--radius-lg);
+  border: 0.0625rem solid var(--color-line-strong);
+  border-radius: var(--radius-md);
   background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
 }
 
 .searchField:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 0.1875rem rgb(53 111 99 / 14%);
+  box-shadow: 0 0 0 0.1875rem rgb(47 107 93 / 12%);
 }
 
 .searchField svg {
@@ -50,7 +49,7 @@
 .searchField input {
   width: 100%;
   min-width: 0;
-  height: 3.375rem;
+  height: 2.875rem;
   border: 0;
   outline: 0;
   background: transparent;
@@ -58,16 +57,16 @@
 }
 
 .searchField input::placeholder {
-  color: #818d84;
+  color: var(--color-muted);
 }
 
 .searchField button {
   padding: var(--space-2);
   border: 0;
   background: transparent;
-  color: var(--color-primary);
-  font-size: 0.78rem;
-  font-weight: 800;
+  color: var(--color-primary-strong);
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
 }
 
@@ -85,14 +84,13 @@
 
 .resultsHeading h2 {
   margin: 0;
-  font-size: clamp(1.3rem, 2vw, 1.65rem);
-  letter-spacing: -0.03em;
+  font-size: clamp(1.125rem, 1.8vw, 1.3125rem);
 }
 
 .resultsHeading > span {
   color: var(--color-muted);
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.8125rem;
+  font-weight: 400;
 }
 
 .personList {
@@ -113,7 +111,7 @@
   transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
 }
 
-.personCard:not(.skeleton):hover { border-color: #c6d6ca; box-shadow: var(--shadow-md); transform: translateY(-.16rem); }
+.personCard:not(.skeleton):hover { border-color: var(--color-line-strong); box-shadow: var(--shadow-md); transform: translateY(-.125rem); }
 
 .personSummary {
   min-width: 0;
@@ -129,13 +127,15 @@
 .avatar {
   display: grid;
   flex: 0 0 auto;
-  width: 3rem;
-  height: 3rem;
+  width: 2.75rem;
+  height: 2.75rem;
   place-items: center;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background: var(--color-primary-soft);
   color: var(--color-primary-strong);
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  line-height: 1;
 }
 
 .personSummary h3 {
@@ -145,9 +145,9 @@
 
 .relationship {
   margin: var(--space-1) 0 0;
-  color: var(--color-primary-strong);
-  font-size: 0.78rem;
-  font-weight: 700;
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+  font-weight: 400;
 }
 
 .note {
@@ -171,22 +171,31 @@
 .prepareLink,
 .messageAction a,
 .messageAction button {
-  min-height: 2.75rem;
+  min-height: 2.5rem;
   padding: 0 var(--space-4);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: var(--space-2);
   border-radius: var(--radius-md);
-  font-size: 0.82rem;
-  font-weight: 800;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: border-color 160ms ease, background-color 160ms ease;
 }
 
 .detailLink,
 .messageAction a,
 .messageAction button {
-  border: 0.0625rem solid var(--color-line);
+  border: 0.0625rem solid var(--color-line-strong);
   background: var(--color-surface);
   color: var(--color-ink);
+}
+
+.detailLink:hover,
+.messageAction a:hover,
+.messageAction button:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary-strong);
 }
 
 .messageAction button {
@@ -194,9 +203,12 @@
 }
 
 .prepareLink {
-  background: var(--color-primary-soft);
-  color: var(--color-primary-strong);
+  border: 0.0625rem solid transparent;
+  background: var(--color-primary);
+  color: #ffffff;
 }
+
+.prepareLink:hover { background: var(--color-primary-strong); }
 
 .message {
   min-height: 11rem;

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { dataSource, isApiError, type GenerateDeckResult } from "@/lib/api";
 import { loadDeckDraft, loadDeckResult, saveDeckResult } from "@/lib/deck-flow";
+import { SeasonMark, seasonForIndex } from "@/lib/season";
 import styles from "./deck-view.module.css";
 
 export function DeckView() {
@@ -56,27 +57,33 @@ export function DeckView() {
 
   const activeIndex = Math.min(selectedIndex, result.cards.length - 1);
   const activeCard = result.cards[activeIndex];
+  const activeSeason = seasonForIndex(activeIndex);
 
   return <div className={styles.page}>
+    <h1 className="visually-hidden">会話デッキ</h1>
     <header className={styles.header}>
-      <div><p className="eyebrow">Conversation deck</p><h1>会話デッキ</h1><p>{result.summary}</p></div>
+      <p className={styles.summary}>{result.summary}</p>
       <span className={styles.deckCount}><strong>{String(result.cards.length).padStart(2, "0")}</strong><span>枚のカード</span></span>
     </header>
-    <div className={styles.toolbar}><span>{revision}回目の生成 · カードを選んで内容を見る</span><button type="button" onClick={regenerate} disabled={generating}>{generating ? "再生成中…" : "別の話題で再生成"}</button></div>
+    <div className={styles.toolbar}><span>{revision}回目 · カードを選んで話題を見る</span><button type="button" onClick={regenerate} disabled={generating}>{generating ? "引き直し中…" : "別の話題を引く"}</button></div>
     {error && <p className={styles.error} role="alert">{error}</p>}
     <section className={styles.experience} aria-label="会話の話題カード" aria-busy={generating}>
       <div className={styles.stage}>
-        <div className={styles.stageCaption}><span>話題カード</span><span>好きな一枚を選ぶ</span></div>
+        <div className={styles.stageCaption}><span>今日のカード</span><span>好きな一枚を選ぶ</span></div>
         <ol className={styles.hand} aria-label="話題カードの一覧">
           {result.cards.map((card, index) => {
-            // Keep the first (strongest) suggestion at the center of the hand.
-            const position = index === 0 ? 0 : index % 2 === 1 ? -Math.ceil(index / 2) : index / 2;
+            // Lay the hand left to right around its own middle, tightening as it grows.
+            const position = index - (result.cards.length - 1) / 2;
+            const step = Math.min(118, 480 / Math.max(result.cards.length - 1, 1));
+            const season = seasonForIndex(index);
             const cardStyle = {
-              "--spread": `${position * 52}px`,
-              "--tilt": `${position * 7}deg`,
-              "--rise": `${Math.abs(position) * 15}px`,
-              "--order": activeIndex === index ? 10 : index + 1,
+              "--spread": `${position * step}px`,
+              "--tilt": `${position * 6}deg`,
+              "--rise": `${Math.abs(position) * 16}px`,
+              // Stack left to right so every card keeps its own left edge visible.
+              "--order": activeIndex === index ? 20 : index + 1,
               "--delay": `${index * 65}ms`,
+              "--suit": season.color,
             } as CSSProperties;
             return <li className={`${styles.handItem} ${activeIndex === index ? styles.selected : ""}`} style={cardStyle} key={`${revision}-${index}`}>
               <button
@@ -88,17 +95,30 @@ export function DeckView() {
                 onClick={() => setSelectedIndex(index)}
                 onKeyDown={(event) => onCardKeyDown(event, index, result.cards.length)}
               >
-                <span className={styles.cardTop}><span>{String(index + 1).padStart(2, "0")} / {String(result.cards.length).padStart(2, "0")}</span><span aria-hidden="true">✦</span></span>
-                <span className={styles.cardBody}><span className={styles.cardLabel}>{index === 0 ? "最初のおすすめ" : "会話の話題"}</span><strong>{card.topic}</strong><span className={styles.cardPreview}>{card.starter}</span></span>
-                <span className={styles.cardBottom}><span>会話デッキ</span><span aria-hidden="true">↗</span></span>
+                <span className={styles.cardFrame} aria-hidden="true" />
+                <span className={styles.cardTop}>
+                  <span className={styles.cardMark} aria-hidden="true"><SeasonMark season={season} /></span>
+                  {index === 0 && <span className={styles.cardPick}>おすすめ</span>}
+                </span>
+                <span className={styles.cardBody}>
+                  <strong>{card.topic}</strong>
+                  <span className={styles.cardPreview}>{card.starter}</span>
+                </span>
+                <span className={styles.cardFoot} aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
               </button>
             </li>;
           })}
         </ol>
         <p className={styles.stageHint}><span className={styles.desktopHint}>← → キーでもカードを選べます</span><span className={styles.mobileHint}>横にスワイプして、カードを選ぶ</span></p>
       </div>
-      <article className={styles.detail} key={`${revision}-${activeIndex}`}>
-        <div className={styles.detailTop}><span>選んだ話題</span><span>{String(activeIndex + 1).padStart(2, "0")} / {String(result.cards.length).padStart(2, "0")}</span></div>
+      <article className={styles.detail} key={`${revision}-${activeIndex}`} style={{ "--suit": activeSeason.color } as CSSProperties}>
+        <div className={styles.detailTop}>
+          <span className={styles.detailSuit}>
+            <span className={styles.detailSuitMark} aria-hidden="true"><SeasonMark season={activeSeason} /></span>
+            <span>選んだ話題</span>
+          </span>
+          <span>{String(activeIndex + 1).padStart(2, "0")} / {String(result.cards.length).padStart(2, "0")}</span>
+        </div>
         <p className={styles.detailEyebrow}>{activeIndex === 0 ? "最初のおすすめ" : "ほかの話題"}</p>
         <h2>{activeCard.topic}</h2>
         <p className={styles.starter}>「{activeCard.starter}」</p>

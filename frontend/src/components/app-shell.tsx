@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { SeasonMark, seasonForIndex } from "@/lib/season";
 import styles from "./app-shell.module.css";
 
 type NavItem = { href: string; label: string; icon: ReactNode };
@@ -52,7 +53,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       <a className={styles.skipLink} href="#main-content">本文へ移動</a>
       <aside className={styles.sidebar}>
         <Link className={styles.brand} href="/" aria-label="HanaFuda ホーム">
-          <span className={styles.brandMark} aria-hidden="true">花</span>
+          <span className={styles.brandMark} aria-hidden="true">
+            <SeasonMark season={seasonForIndex(2)} />
+          </span>
           <span>HanaFuda</span>
         </Link>
         <Navigation />

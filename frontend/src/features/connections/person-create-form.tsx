@@ -1,51 +1,70 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, type FormEvent } from "react";
+import { useRef, useState } from "react";
+import { StepCards, type StepCard } from "@/components/step-cards";
 import { dataSource, isApiError, type Person } from "@/lib/api";
+import { SeasonMark, seasonForIndex } from "@/lib/season";
 import styles from "./person-create-form.module.css";
-
-type FieldName = "name" | "relationship" | "knownInformation" | "situation";
-type FieldErrors = Partial<Record<FieldName, string>>;
-
-interface FormValues {
-  name: string;
-  relationship: string;
-  knownInformation: string;
-  situation: string;
-}
 
 interface SuccessState {
   person: Person;
   situation: string;
 }
 
-const initialValues: FormValues = {
-  name: "",
-  relationship: "",
-  knownInformation: "",
-  situation: "",
+const steps: StepCard[] = [
+  {
+    id: "person-name",
+    prompt: "相手を、なんと呼びますか？",
+    label: "名前・呼び名",
+    helper: "空欄のままでも進めます。あとから変更できます。",
+    placeholder: "例: 佐藤さん",
+    maxLength: 51,
+    required: false,
+  },
+  {
+    id: "person-relationship",
+    prompt: "その人とは、どんな関係ですか？",
+    label: "自分との関係",
+    helper: "どこで知り合ったか、いまどんな間柄かを書きます。",
+    placeholder: "例: 大学のゼミ仲間",
+    maxLength: 51,
+    required: true,
+  },
+  {
+    id: "known-information",
+    prompt: "その人について、知っていることは？",
+    label: "知っていること",
+    helper: "興味、最近聞いたこと、共通点など。空欄でも進めます。",
+    placeholder: "例: 音楽が好き。最近ライブへ行った。",
+    maxLength: 501,
+    required: false,
+    multiline: true,
+  },
+  {
+    id: "meeting-situation",
+    prompt: "今回は、どこで会いますか？",
+    label: "会う場所・状況",
+    helper: "このあとの話題づくりに使います。",
+    placeholder: "例: ハッカソン会場で初めて会う",
+    maxLength: 121,
+    required: true,
+  },
+];
+
+const limits: Record<string, { max: number; requiredMessage?: string }> = {
+  "person-name": { max: 50 },
+  "person-relationship": { max: 50, requiredMessage: "自分との関係を入力してください。" },
+  "known-information": { max: 500 },
+  "meeting-situation": { max: 120, requiredMessage: "会う場所や状況を入力してください。" },
 };
 
-function validate(values: FormValues): FieldErrors {
-  const errors: FieldErrors = {};
-  if (values.name.trim().length > 50) {
-    errors.name = "50文字以内で入力してください。";
-  }
-  if (!values.relationship.trim()) {
-    errors.relationship = "自分との関係を入力してください。";
-  } else if (values.relationship.trim().length > 50) {
-    errors.relationship = "50文字以内で入力してください。";
-  }
-  if (values.knownInformation.trim().length > 500) {
-    errors.knownInformation = "500文字以内で入力してください。";
-  }
-  if (!values.situation.trim()) {
-    errors.situation = "会う場所や状況を入力してください。";
-  } else if (values.situation.trim().length > 120) {
-    errors.situation = "120文字以内で入力してください。";
-  }
-  return errors;
+function checkValue(id: string, value: string) {
+  const limit = limits[id];
+  const trimmed = value.trim();
+  if (!trimmed && limit.requiredMessage) return limit.requiredMessage;
+  if (trimmed.length > limit.max) return `${limit.max}文字以内で入力してください。`;
+  return undefined;
 }
 
 function submitErrorMessage(error: unknown) {
@@ -56,36 +75,36 @@ function submitErrorMessage(error: unknown) {
 
 export function PersonCreateForm() {
   const submittingRef = useRef(false);
-  const [values, setValues] = useState<FormValues>(initialValues);
-  const [errors, setErrors] = useState<FieldErrors>({});
+  const [values, setValues] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [success, setSuccess] = useState<SuccessState | null>(null);
 
-  function updateField(field: FieldName, value: string) {
-    setValues((current) => ({ ...current, [field]: value }));
-    setErrors((current) => ({ ...current, [field]: undefined }));
+  function handleChange(id: string, value: string) {
+    setValues((current) => ({ ...current, [id]: value }));
+    setErrors((current) => ({ ...current, [id]: undefined }));
     setSubmitError(null);
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function checkStep(id: string) {
+    const message = checkValue(id, values[id] ?? "");
+    setErrors((current) => ({ ...current, [id]: message }));
+    return message;
+  }
+
+  async function complete() {
     if (submittingRef.current) return;
-
-    const nextErrors = validate(values);
-    setErrors(nextErrors);
-    setSubmitError(null);
-    if (Object.keys(nextErrors).length > 0) return;
-
     submittingRef.current = true;
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       const person = await dataSource.createPerson({
-        name: values.name.trim() || "名前不明",
-        relationship: values.relationship.trim(),
-        known_information: values.knownInformation.trim(),
+        name: (values["person-name"] ?? "").trim() || "名前不明",
+        relationship: (values["person-relationship"] ?? "").trim(),
+        known_information: (values["known-information"] ?? "").trim(),
       });
-      setSuccess({ person, situation: values.situation.trim() });
+      setSuccess({ person, situation: (values["meeting-situation"] ?? "").trim() });
     } catch (error) {
       setSubmitError(submitErrorMessage(error));
     } finally {
@@ -99,8 +118,9 @@ export function PersonCreateForm() {
     return (
       <div className={styles.successPage}>
         <section className={`${styles.successCard} surface`} aria-live="polite">
-          <span className={styles.successIcon} aria-hidden="true">✓</span>
-          <p className="eyebrow">Registered</p>
+          <span className={styles.successIcon} aria-hidden="true">
+            <SeasonMark season={seasonForIndex(2)} />
+          </span>
           <h1>{success.person.name}を登録しました</h1>
           <p>続けて、今回の会話に合った話題を準備しましょう。</p>
           <div className={styles.successActions}>
@@ -121,161 +141,24 @@ export function PersonCreateForm() {
 
   return (
     <div className={styles.page}>
-      <header className="page-header">
-        <p className="eyebrow">New connection</p>
-        <h1>新しい相手を登録</h1>
-        <p>分かる範囲だけで大丈夫です。名前が分からなくても始められます。</p>
-      </header>
-
-      <form className={`${styles.form} surface`} onSubmit={handleSubmit} noValidate>
-        <div className={styles.formIntro}>
-          <div>
-            <span className={styles.step}>1</span>
-            <h2>相手について</h2>
-          </div>
-          <p><span aria-hidden="true">*</span> は必須項目です</p>
-        </div>
-
-        <div className={styles.fields}>
-          <Field
-            id="person-name"
-            label="名前・呼び名"
-            helper="任意。空欄の場合は「名前不明」で登録します。"
-            error={errors.name}
-          >
-            <input
-              id="person-name"
-              name="name"
-              type="text"
-              value={values.name}
-              onChange={(event) => updateField("name", event.target.value)}
-              maxLength={51}
-              placeholder="例: 佐藤さん"
-              aria-invalid={Boolean(errors.name)}
-              aria-describedby="person-name-help person-name-error"
-              disabled={isSubmitting}
-            />
-          </Field>
-
-          <Field
-            id="person-relationship"
-            label="自分との関係"
-            required
-            helper="どこで知り合ったか、どんな関係かを入力します。"
-            error={errors.relationship}
-          >
-            <input
-              id="person-relationship"
-              name="relationship"
-              type="text"
-              value={values.relationship}
-              onChange={(event) => updateField("relationship", event.target.value)}
-              maxLength={51}
-              placeholder="例: 大学のゼミ仲間"
-              aria-invalid={Boolean(errors.relationship)}
-              aria-describedby="person-relationship-help person-relationship-error"
-              disabled={isSubmitting}
-            />
-          </Field>
-
-          <Field
-            id="known-information"
-            label="知っていること"
-            helper="任意。興味、最近聞いたこと、共通点など。"
-            error={errors.knownInformation}
-          >
-            <textarea
-              id="known-information"
-              name="known_information"
-              value={values.knownInformation}
-              onChange={(event) => updateField("knownInformation", event.target.value)}
-              maxLength={501}
-              rows={4}
-              placeholder="例: 音楽が好き。最近ライブへ行った。"
-              aria-invalid={Boolean(errors.knownInformation)}
-              aria-describedby="known-information-help known-information-error"
-              disabled={isSubmitting}
-            />
-          </Field>
-        </div>
-
-        <div className={styles.divider} />
-
-        <div className={styles.formIntro}>
-          <div>
-            <span className={styles.step}>2</span>
-            <h2>今回会う状況</h2>
-          </div>
-        </div>
-
-        <div className={styles.fields}>
-          <Field
-            id="meeting-situation"
-            label="会う場所・状況"
-            required
-            helper="登録後の会話設定へ引き継ぎます。"
-            error={errors.situation}
-          >
-            <input
-              id="meeting-situation"
-              name="situation"
-              type="text"
-              value={values.situation}
-              onChange={(event) => updateField("situation", event.target.value)}
-              maxLength={121}
-              placeholder="例: ハッカソン会場で初めて会う"
-              aria-invalid={Boolean(errors.situation)}
-              aria-describedby="meeting-situation-help meeting-situation-error"
-              disabled={isSubmitting}
-            />
-          </Field>
-        </div>
-
-        {submitError ? (
+      <h1 className="visually-hidden">新しい相手を登録</h1>
+      <StepCards
+        steps={steps}
+        values={values}
+        errors={errors}
+        onChange={handleChange}
+        checkStep={checkStep}
+        onComplete={() => { void complete(); }}
+        submitting={isSubmitting}
+        submitLabel={isSubmitting ? "登録中…" : "登録する"}
+        cancel={<Link className={styles.textLink} href="/connections">キャンセル</Link>}
+        banner={submitError ? (
           <div className={styles.submitError} role="alert">
             <strong>登録に失敗しました</strong>
             <span>{submitError}</span>
           </div>
         ) : null}
-
-        <div className={styles.formActions}>
-          <Link className={styles.cancelLink} href="/connections">
-            キャンセル
-          </Link>
-          <button className="button button-primary" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "登録中…" : "登録して次へ"}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
-
-function Field({
-  id,
-  label,
-  helper,
-  error,
-  required = false,
-  children,
-}: {
-  id: string;
-  label: string;
-  helper: string;
-  error?: string;
-  required?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className={styles.field}>
-      <label htmlFor={id}>
-        {label} {required ? <span>必須</span> : <small>任意</small>}
-      </label>
-      {children}
-      <p id={`${id}-help`} className={styles.helper}>{helper}</p>
-      <p id={`${id}-error`} className={styles.fieldError} aria-live="polite">
-        {error ?? ""}
-      </p>
+      />
     </div>
   );
 }
