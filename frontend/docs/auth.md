@@ -35,25 +35,29 @@
 | ブラウザー用クライアント | `src/lib/supabase/browser.ts` |
 | サーバー用クライアント | `src/lib/supabase/server.ts` |
 | メール確認リンクの受け口 | `src/app/auth/confirm/route.ts` |
+| APIへ送る認証ヘッダー | `src/lib/api/auth-header.ts` |
 
 公開ルートは `/login`、`/signup`、`/auth/*` の3つです。
 
-## 既知の問題: バックエンドがユーザーを検証していない
+## バックエンドとの認証契約
 
-**この状態のまま本番で使わないでください。**
+フロントエンドは API 呼び出しごとに `Authorization: Bearer <access token>` を送ります（`src/lib/api/auth-header.ts`）。トークンは Supabase のセッションから取得し、期限切れの場合は `getSession` が自動で更新します。
 
-現在の FastAPI は `X-User-Id` ヘッダーをそのまま信用します。JWT の検証は行われず、ヘッダーが無い場合は `DEFAULT_USER_ID` にフォールバックします（`backend/api/dependencies.py` の `get_current_user_id`）。さらに `backend/main.py` の CORS 設定が許可するヘッダーは `Content-Type` と `X-User-Id` のみで、`Authorization` を送ることができません。
+バックエンドは `backend/api/dependencies.py` の `get_current_user_id` でこれを検証し、Supabase のユーザー ID を取り出してデータを分離します。挙動は `AUTH_MODE` で変わります。
 
-そのためフロントエンドは、ログイン中のユーザーの Supabase UUID を `X-User-Id` に入れて送っています（`src/lib/api/user-header.ts`）。**この方式では、誰でもヘッダーを他人の UUID に書き換えることで、他人のデータを読み書きできます。**
+| `AUTH_MODE` | Bearer あり | Bearer なし |
+| --- | --- | --- |
+| `jwt`（既定） | トークンを検証して利用者を特定 | 401 |
+| `legacy` | トークンを検証して利用者を特定 | `DEFAULT_USER_ID` として扱う |
 
-### 解消に必要なバックエンド側の変更
+`public.users` の行は、最初の `GET /api/profile` で遅延作成されます（`backend/api/routes/profile.py` の `_ensure_profile`）。サインアップ用のトリガーは不要です。
 
-フロントエンド担当は `backend/` を変更しない取り決めのため、以下はバックエンド担当への依頼事項です。
+## 認証を外してローカル確認する
 
-1. CORS の `allow_headers` に `Authorization` を追加する。
-2. `get_current_user_id` を、`Authorization: Bearer <token>` の Supabase JWT を検証して `sub` クレームを返す実装に置き換える。検証には Supabase プロジェクトの JWT secret、または JWKS を使う。
-3. `DEFAULT_USER_ID` へのフォールバックを廃止し、トークンが無い場合は 401 を返す。
-4. `public.users` を `auth.users(id)` と対応付ける。サインアップ時に行が作られるよう、`auth.users` への insert トリガーか、バックエンド側での upsert を用意する。現在の `public.users` は `gen_random_uuid()` で独自に発番しており、Supabase のアカウントと紐づいていない（`backend/supabase/migrations/0001_initial_schema.sql`）。
-5. 各テーブルに RLS を設定する。
+バックエンドと AI の疎通だけを確認したい場合は、アカウントを作らずに動かせます。
 
-バックエンドが Bearer トークンを検証するようになったら、フロントエンドは `src/lib/api/user-header.ts` を削除し、`Authorization` ヘッダーを送る実装へ差し替えます。
+1. `frontend/.env.local` に `NEXT_PUBLIC_AUTH_ENABLED=false` を設定します。`src/proxy.ts` がルート保護を行わなくなり、`Authorization` ヘッダーも送られなくなります。
+2. `backend/.env` に `AUTH_MODE=legacy` を設定します。**これを設定しないと `AUTH_MODE` は既定の `jwt` となり、全リクエストが 401 になります。**
+3. 両方のサーバーを再起動します。
+
+この状態では全員が `DEFAULT_USER_ID` として動作し、データは分離されません。デプロイ環境には絶対に設定しないでください。
