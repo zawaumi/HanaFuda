@@ -1,4 +1,4 @@
-import type { GenerateDeckInput, GenerateDeckResult } from "@/lib/api";
+import type { ConversationContext, GenerateDeckInput, GenerateDeckResult } from "@/lib/api";
 
 const DRAFT_KEY = "hanafuda:deck-draft";
 const RESULT_KEY = "hanafuda:deck-result";
@@ -12,6 +12,14 @@ export function loadDeckDraft(): GenerateDeckInput | null {
   const raw = sessionStorage.getItem(DRAFT_KEY);
   if (!raw) return null;
   try { return JSON.parse(raw) as GenerateDeckInput; } catch { return null; }
+}
+
+export function loadDeckContextForPerson(personId: string): ConversationContext | null {
+  const draft = loadDeckDraft();
+  if (draft?.person?.id !== personId) return null;
+  const context = draft.context;
+  if (!context || typeof context.purpose !== "string" || typeof context.situation !== "string" || typeof context.extra !== "string") return null;
+  return context;
 }
 
 export function saveDeckResult(result: GenerateDeckResult) {

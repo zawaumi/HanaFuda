@@ -4,19 +4,30 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { dataSource, isApiError, type Conversation, type Person, type User } from "@/lib/api";
-import { saveDeckDraft } from "@/lib/deck-flow";
+import { loadDeckContextForPerson, saveDeckDraft } from "@/lib/deck-flow";
 import styles from "./conversation-setup.module.css";
 
 type Loaded = { user: User; person: Person; history: Conversation[] };
 type LoadState = { status: "loading" } | { status: "ready"; data: Loaded } | { status: "error"; message: string };
 
-export function ConversationSetup({ personId, initialSituation }: { personId: string; initialSituation: string }) {
+export function ConversationSetup({ personId, initialSituation, resumeDraft }: { personId: string; initialSituation: string; resumeDraft: boolean }) {
   const router = useRouter();
   const [load, setLoad] = useState<LoadState>({ status: "loading" });
   const [purpose, setPurpose] = useState("");
   const [situation, setSituation] = useState(initialSituation);
   const [extra, setExtra] = useState("");
   const [errors, setErrors] = useState<{ purpose?: string; situation?: string }>({});
+
+  useEffect(() => {
+    if (!resumeDraft) return;
+    const context = loadDeckContextForPerson(personId);
+    if (!context) return;
+    queueMicrotask(() => {
+      setPurpose(context.purpose);
+      setSituation(context.situation);
+      setExtra(context.extra);
+    });
+  }, [personId, resumeDraft]);
 
   useEffect(() => {
     let active = true;
