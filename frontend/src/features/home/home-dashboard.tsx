@@ -117,7 +117,7 @@ export function HomeDashboard() {
 
   return (
     <div className={styles.home}>
-      <header className="page-header">
+      <header className={`page-header ${styles.homeHeader}`}>
         <p className="eyebrow">Home</p>
         <h1>会話の準備</h1>
         <p>相手や状況に合わせて、話題を選べます。</p>
@@ -135,7 +135,7 @@ export function HomeDashboard() {
         </Link>
       </section>
 
-      <section className={styles.section} aria-labelledby="quick-topics">
+      <section className={`${styles.section} ${styles.quickSection}`} aria-labelledby="quick-topics">
         <div className={styles.sectionHeading}>
           <div>
             <p className={styles.sectionLabel}>QUICK TOPICS</p>
@@ -154,7 +154,7 @@ export function HomeDashboard() {
         </ol>
       </section>
 
-      <section className={styles.section} aria-labelledby="recent-people">
+      <section className={`${styles.section} ${styles.recentSection}`} aria-labelledby="recent-people">
         <div className={styles.sectionHeading}>
           <div>
             <p className={styles.sectionLabel}>RECENT</p>
