@@ -1,0 +1,14 @@
+.page { display: grid; gap: var(--space-8); max-width: 50rem; margin-inline: auto; }
+.form { display: grid; gap: var(--space-3); padding: clamp(var(--space-5), 5vw, var(--space-8)); }
+.form label { display: grid; gap: var(--space-2); font-weight: 800; }
+.form label span, .form small { color: var(--color-muted); font-size: .75rem; font-weight: 400; }
+.form textarea { min-height: 6rem; resize: vertical; }
+.form [aria-invalid="true"] { border-color: var(--color-danger); }
+.person { padding: var(--space-5); margin-bottom: var(--space-4); border-radius: var(--radius-md); background: var(--color-canvas); }
+.person p { margin: var(--space-2) 0 0; color: var(--color-muted); line-height: 1.6; }
+.hint { margin: 0; color: var(--color-muted); font-size: .875rem; }
+.error { min-height: 1rem; margin: 0; color: var(--color-danger); font-size: .8rem; }
+.actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-5); margin-top: var(--space-4); }
+.actions a { color: var(--color-muted); font-weight: 700; }
+.notice { padding: var(--space-6); background: var(--color-surface); border-radius: var(--radius-md); }
+@media (max-width: 47.99rem) { .actions { flex-direction: column-reverse; align-items: stretch; text-align: center; } }

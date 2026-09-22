@@ -1,0 +1,236 @@
+.home {
+  display: grid;
+  gap: clamp(var(--space-8), 5vw, var(--space-12));
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-8);
+  padding: clamp(var(--space-6), 5vw, var(--space-10));
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 92% 15%, rgb(217 255 131 / 70%), transparent 27%),
+    var(--color-surface);
+}
+
+.hero h2 {
+  max-width: 35rem;
+  margin: var(--space-4) 0 0;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  letter-spacing: -0.04em;
+}
+
+.hero p {
+  max-width: 38rem;
+  margin: var(--space-3) 0 0;
+  color: var(--color-muted);
+  line-height: 1.75;
+}
+
+.section {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+
+.sectionHeading h2 {
+  margin: var(--space-1) 0 0;
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+  letter-spacing: -0.035em;
+}
+
+.sectionHeading > p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.sectionLabel {
+  margin: 0;
+  color: var(--color-primary);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.topicGrid,
+.personGrid {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  list-style: none;
+}
+
+.topicGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.topicCard {
+  min-width: 0;
+  padding: var(--space-5);
+}
+
+.topicNumber {
+  color: var(--color-primary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.topicCard h3 {
+  margin: var(--space-4) 0 0;
+  font-size: 1rem;
+}
+
+.topicCard p {
+  margin: var(--space-3) 0 0;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+
+.textLink {
+  color: var(--color-primary);
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+.personGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.personCard {
+  min-width: 0;
+  padding: var(--space-5);
+}
+
+.personTopline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.personTopline h3,
+.feedback h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.personTopline p,
+.feedback p {
+  margin: var(--space-1) 0 0;
+  color: var(--color-muted);
+  font-size: 0.82rem;
+}
+
+.personAvatar {
+  display: grid;
+  flex: 0 0 auto;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+  font-weight: 800;
+}
+
+.personNote {
+  min-height: 3.25rem;
+  margin: var(--space-4) 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+.personFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 0.0625rem solid var(--color-line);
+  font-size: 0.78rem;
+}
+
+.personFooter > span {
+  color: var(--color-muted);
+}
+
+.personFooter a {
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+.feedback {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding: var(--space-6);
+}
+
+.retryButton,
+.secondaryButton {
+  min-height: 2.75rem;
+  padding: 0 var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.0625rem solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: 0.875rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.skeleton {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.skeleton span {
+  display: block;
+  height: 1rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-soft),
+    var(--color-canvas),
+    var(--color-surface-soft)
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.skeleton span:first-child { width: 45%; }
+.skeleton span:nth-child(2) { width: 75%; }
+.skeleton span:last-child { width: 60%; }
+
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+@media (max-width: 47.99rem) {
+  .hero { grid-template-columns: 1fr; gap: var(--space-5); }
+  .sectionHeading { align-items: start; }
+  .sectionHeading > p { display: none; }
+  .topicGrid, .personGrid { grid-template-columns: 1fr; }
+  .feedback { align-items: stretch; flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton span { animation: none; }
+}
