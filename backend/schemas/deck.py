@@ -18,9 +18,13 @@ class UserProfileContext(SchemaModel):
 
     name: Optional[str] = Field(default=None, max_length=100)
     status: Optional[str] = Field(default=None, max_length=200)
-    interests: List[constr(strip_whitespace=True, min_length=1, max_length=100)] = Field(default_factory=list)
+    interests: List[constr(strip_whitespace=True, min_length=1, max_length=100)] = Field(
+        default_factory=list, max_length=20
+    )
     recent: Optional[str] = Field(default=None, max_length=500)
-    avoid_topics: List[constr(strip_whitespace=True, min_length=1, max_length=100)] = Field(default_factory=list)
+    avoid_topics: List[constr(strip_whitespace=True, min_length=1, max_length=100)] = Field(
+        default_factory=list, max_length=20
+    )
 
 
 class PersonContext(SchemaModel):

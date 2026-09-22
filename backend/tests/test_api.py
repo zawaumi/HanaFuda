@@ -53,6 +53,15 @@ def test_deck_generation_is_available_without_external_services(client):
     assert 3 <= len(response.json()["cards"]) <= 5
 
 
+def test_deck_generation_requires_authentication(unauthenticated_client):
+    response = unauthenticated_client.post(
+        "/api/deck/generate",
+        json={"user": {}, "context": {"purpose": "雑談", "situation": "会場"}},
+    )
+    assert response.status_code == 401
+    assert response.headers["www-authenticate"] == "Bearer"
+
+
 def test_validation_and_not_found_errors_are_safe(client):
     invalid = client.post("/api/persons", json={"relationship": " "})
     assert invalid.status_code == 422

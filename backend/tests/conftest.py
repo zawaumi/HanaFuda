@@ -1,4 +1,4 @@
-"""Shared fixtures for backend tests."""
+from collections.abc import Iterator
 
 import pytest
 from fastapi.testclient import TestClient
@@ -22,6 +22,16 @@ def client(repository: InMemoryRepository) -> TestClient:
     app.dependency_overrides[get_deck_service] = lambda: DeckService(
         Settings(deck_provider="rules")
     )
+    with TestClient(app) as test_client:
+        yield test_client
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def unauthenticated_client() -> Iterator[TestClient]:
+    """Exercise the real authentication dependency without test overrides."""
+
+    app.dependency_overrides.clear()
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()

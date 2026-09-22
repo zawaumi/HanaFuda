@@ -2,7 +2,7 @@
 
 ## Supabase接続設定
 
-1. Supabaseでプロジェクトを作成し、`supabase/migrations/0001_initial_schema.sql` と `0002_performance_indexes.sql` を順番にSQL Editorで実行します。
+1. Supabaseでプロジェクトを作成し、`supabase/migrations/0001_initial_schema.sql`、`0002_performance_indexes.sql`、`0003_row_level_security.sql`を順番にSQL Editorで実行します。
 2. `backend/.env.example` を `backend/.env` にコピーします。
 3. `SUPABASE_URL` とサーバー用の `SUPABASE_SERVICE_ROLE_KEY` を設定します。
 4. ローカルで認証未実装のフロントエンドを接続する場合だけ、`.env` の `AUTH_MODE=legacy` を使います。本番では必ず `AUTH_MODE=jwt` にし、フロントエンドからSupabase AuthのBearer tokenを送ります。

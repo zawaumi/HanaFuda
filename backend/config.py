@@ -4,7 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, List, Optional
 
-from pydantic import Field, SecretStr, field_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 ENV_FILE = Path(__file__).resolve().parent / ".env"
@@ -95,6 +95,15 @@ class Settings(BaseSettings):
         if normalized not in {"jwt", "legacy"}:
             raise ValueError("AUTH_MODE must be 'jwt' or 'legacy'.")
         return normalized
+
+    @model_validator(mode="after")
+    def validate_production_hosts(self) -> "Settings":
+        local_hosts = {"localhost", "127.0.0.1", "testserver"}
+        if self.app_env.lower() == "production" and not self.allowed_hosts:
+            raise ValueError("ALLOWED_HOSTS must be configured in production.")
+        if self.app_env.lower() == "production" and set(self.allowed_hosts) <= local_hosts:
+            raise ValueError("ALLOWED_HOSTS must include the production host.")
+        return self
 
 
 @lru_cache(maxsize=1)

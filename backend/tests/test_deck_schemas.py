@@ -88,3 +88,21 @@ class DeckSchemaTests(unittest.TestCase):
                     "cards": [card, response_card(2), response_card(3)],
                 }
             )
+
+    def test_rejects_more_than_twenty_user_interests(self) -> None:
+        with self.assertRaises(ValidationError):
+            DeckGenerateRequest.model_validate(
+                {
+                    "user": {"interests": [f"興味{index}" for index in range(21)]},
+                    "context": {"purpose": "雑談", "situation": "会場"},
+                }
+            )
+
+    def test_rejects_more_than_twenty_avoided_topics(self) -> None:
+        with self.assertRaises(ValidationError):
+            DeckGenerateRequest.model_validate(
+                {
+                    "user": {"avoid_topics": [f"話題{index}" for index in range(21)]},
+                    "context": {"purpose": "雑談", "situation": "会場"},
+                }
+            )
