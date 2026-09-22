@@ -5,6 +5,8 @@ on:
     paths:
       - "backend/**"
       - "docs/api/**"
+      - "docs/backend/**"
+      - "render.yaml"
       - ".github/workflows/backend.yml"
   push:
     branches:
@@ -13,6 +15,8 @@ on:
     paths:
       - "backend/**"
       - "docs/api/**"
+      - "docs/backend/**"
+      - "render.yaml"
       - ".github/workflows/backend.yml"
 
 permissions:

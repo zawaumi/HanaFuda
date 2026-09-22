@@ -88,3 +88,21 @@ def create_memory(
         )
     except RepositoryError as error:
         raise HTTPException(status_code=503, detail="記憶を保存できませんでした。") from error
+
+
+@router.get("/persons/{person_id}/memories", response_model=List[PersonMemory], tags=["memories"])
+def list_memories(
+    person_id: UUID,
+    limit: int = Query(default=100, ge=1, le=100),
+    user_id: str = Depends(get_current_user_id),
+    repository: Repository = Depends(get_repository),
+) -> List[PersonMemory]:
+    try:
+        if repository.get_person(user_id, str(person_id)) is None:
+            raise HTTPException(status_code=404, detail="相手が見つかりません。")
+        return [
+            PersonMemory.model_validate(item)
+            for item in repository.list_memories(user_id, str(person_id), limit)
+        ]
+    except RepositoryError as error:
+        raise HTTPException(status_code=503, detail="記憶を取得できませんでした。") from error

@@ -70,3 +70,22 @@ def test_cors_allows_configured_frontend_origin(client):
     )
     assert response.status_code == 200
     assert response.headers["access-control-allow-origin"] == "http://localhost:3000"
+
+
+def test_api_responses_include_security_headers(client):
+    response = client.get("/api/persons")
+    assert response.status_code == 200
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["cache-control"] == "no-store"
+
+
+def test_memories_can_be_listed_with_a_limit(client):
+    person = client.post("/api/persons", json={"relationship": "友人"}).json()
+    client.post(
+        f"/api/persons/{person['id']}/memories",
+        json={"content": "確認済みの記憶"},
+    )
+    response = client.get(f"/api/persons/{person['id']}/memories", params={"limit": 1})
+    assert response.status_code == 200
+    assert len(response.json()) == 1

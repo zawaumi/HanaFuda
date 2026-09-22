@@ -2,10 +2,10 @@
 
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
 from pydantic import Field, SecretStr, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 ENV_FILE = Path(__file__).resolve().parent / ".env"
 
@@ -25,28 +25,38 @@ class Settings(BaseSettings):
     app_env: str = Field(default="development", validation_alias="APP_ENV")
     log_level: str = Field(default="INFO", validation_alias="LOG_LEVEL")
     api_prefix: str = Field(default="/api", validation_alias="API_PREFIX")
-    cors_origins: List[str] = Field(
+    cors_origins: Annotated[List[str], NoDecode] = Field(
         default_factory=lambda: ["http://localhost:3000", "http://127.0.0.1:3000"],
         validation_alias="CORS_ORIGINS",
     )
-    cors_methods: List[str] = Field(
+    cors_methods: Annotated[List[str], NoDecode] = Field(
         default_factory=lambda: ["GET", "POST", "PATCH", "OPTIONS"],
         validation_alias="CORS_ALLOW_METHODS",
     )
-    cors_headers: List[str] = Field(
-        default_factory=lambda: ["Content-Type", "X-User-ID", "X-Request-ID"],
+    cors_headers: Annotated[List[str], NoDecode] = Field(
+        default_factory=lambda: [
+            "Accept",
+            "Authorization",
+            "Content-Type",
+            "X-User-ID",
+            "X-Request-ID",
+        ],
         validation_alias="CORS_ALLOW_HEADERS",
     )
     cors_allow_credentials: bool = Field(
         default=False, validation_alias="CORS_ALLOW_CREDENTIALS"
     )
-    allowed_hosts: List[str] = Field(
+    allowed_hosts: Annotated[List[str], NoDecode] = Field(
         default_factory=lambda: ["localhost", "127.0.0.1", "testserver"],
         validation_alias="ALLOWED_HOSTS",
     )
     default_user_id: str = Field(
         default="00000000-0000-0000-0000-000000000001",
         validation_alias="DEFAULT_USER_ID",
+    )
+    auth_mode: str = Field(default="jwt", validation_alias="AUTH_MODE")
+    auth_cache_ttl_seconds: int = Field(
+        default=30, ge=0, le=300, validation_alias="AUTH_CACHE_TTL_SECONDS"
     )
     supabase_url: Optional[str] = Field(default=None, validation_alias="SUPABASE_URL")
     supabase_key: Optional[SecretStr] = Field(default=None, validation_alias="SUPABASE_KEY")
@@ -77,6 +87,14 @@ class Settings(BaseSettings):
     @property
     def supabase_configured(self) -> bool:
         return bool(self.supabase_url and self.database_key)
+
+    @field_validator("auth_mode")
+    @classmethod
+    def validate_auth_mode(cls, value: str) -> str:
+        normalized = value.strip().lower()
+        if normalized not in {"jwt", "legacy"}:
+            raise ValueError("AUTH_MODE must be 'jwt' or 'legacy'.")
+        return normalized
 
 
 @lru_cache(maxsize=1)

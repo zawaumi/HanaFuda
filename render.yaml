@@ -15,6 +15,10 @@ services:
         sync: false
       - key: ALLOWED_HOSTS
         sync: false
+      - key: AUTH_MODE
+        value: jwt
+      - key: AUTH_CACHE_TTL_SECONDS
+        value: "30"
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY

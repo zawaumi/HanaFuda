@@ -37,7 +37,9 @@ class Repository(Protocol):
 
     def create_conversation(self, user_id: str, values: Dict[str, Any]) -> Dict[str, Any]: ...
 
-    def list_memories(self, user_id: str, person_id: str) -> List[Dict[str, Any]]: ...
+    def list_memories(
+        self, user_id: str, person_id: str, limit: int = 100
+    ) -> List[Dict[str, Any]]: ...
 
     def create_memory(self, user_id: str, person_id: str, values: Dict[str, Any]) -> Dict[str, Any]: ...
 
@@ -159,13 +161,14 @@ class SupabaseRepository:
         except Exception as error:
             raise RepositoryError("会話結果の保存に失敗しました。") from error
 
-    def list_memories(self, user_id: str, person_id: str) -> List[Dict[str, Any]]:
+    def list_memories(self, user_id: str, person_id: str, limit: int = 100) -> List[Dict[str, Any]]:
         try:
             response = (
                 self.client.table("person_memories")
                 .select("*")
                 .eq("person_id", person_id)
                 .order("created_at", desc=True)
+                .limit(limit)
                 .execute()
             )
             return list(_data(response) or [])
@@ -269,11 +272,11 @@ class InMemoryRepository:
         self.conversations[conversation_id] = conversation
         return conversation.copy()
 
-    def list_memories(self, user_id: str, person_id: str) -> List[Dict[str, Any]]:
+    def list_memories(self, user_id: str, person_id: str, limit: int = 100) -> List[Dict[str, Any]]:
         if not self.get_person(user_id, person_id):
             return []
         values = [memory for memory in self.memories.values() if memory["person_id"] == person_id]
-        return sorted(values, key=lambda item: item["created_at"], reverse=True)
+        return sorted(values, key=lambda item: item["created_at"], reverse=True)[:limit]
 
     def create_memory(self, user_id: str, person_id: str, values: Dict[str, Any]) -> Dict[str, Any]:
         if not self.get_person(user_id, person_id):

@@ -3,7 +3,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from api.dependencies import get_deck_service, get_repository
+from api.dependencies import get_current_user_id, get_deck_service, get_repository
 from config import Settings
 from db.repository import InMemoryRepository
 from main import app
@@ -18,6 +18,7 @@ def repository() -> InMemoryRepository:
 @pytest.fixture
 def client(repository: InMemoryRepository) -> TestClient:
     app.dependency_overrides[get_repository] = lambda: repository
+    app.dependency_overrides[get_current_user_id] = lambda: "00000000-0000-0000-0000-000000000001"
     app.dependency_overrides[get_deck_service] = lambda: DeckService(
         Settings(deck_provider="rules")
     )
