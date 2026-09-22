@@ -66,6 +66,13 @@ class RuleBasedDeckGeneratorTests(unittest.TestCase):
 
         self.assertEqual(len(result.cards), 3)
         self.assertTrue(all(card.topic and card.branches for card in result.cards))
+        self.assertTrue(all(len(card.branches) == 2 for card in result.cards))
+        self.assertTrue(
+            all("具体的に話して" in card.branches[0].condition for card in result.cards)
+        )
+        self.assertTrue(
+            all("短く答えた" in card.branches[1].condition for card in result.cards)
+        )
 
     def test_does_not_reintroduce_avoided_topics_when_filtering(self) -> None:
         result = RuleBasedDeckGenerator().generate(
@@ -149,6 +156,9 @@ class DeckPromptTests(unittest.TestCase):
         self.assertIn("`cards` は必ず3〜5件", prompt)
         self.assertIn("`user.avoid_topics`", prompt)
         self.assertIn("質問攻め", prompt)
+        self.assertIn("`branches` は必ず2件", prompt)
+        self.assertIn("相手が詳しく話した場合", prompt)
+        self.assertIn("相手が短く答えた場合", prompt)
         self.assertIn('"branches"', prompt)
         self.assertIn('"avoid_topics": ["政治"]', prompt)
         self.assertIn("JSONオブジェクトのみ", DECK_SYSTEM_PROMPT)
