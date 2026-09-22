@@ -39,7 +39,7 @@
 
 .searchField:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 0.1875rem rgb(88 99 232 / 12%);
+  box-shadow: 0 0 0 0.1875rem rgb(53 111 99 / 14%);
 }
 
 .searchField svg {
@@ -62,7 +62,7 @@
 }
 
 .searchField input::placeholder {
-  color: #8b91a5;
+  color: #818d84;
 }
 
 .searchField button {
@@ -114,7 +114,10 @@
   justify-content: space-between;
   gap: var(--space-6);
   padding: var(--space-5);
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
 }
+
+.personCard:not(.skeleton):hover { border-color: #c6d6ca; box-shadow: var(--shadow-md); transform: translateY(-.16rem); }
 
 .personSummary {
   min-width: 0;
@@ -264,4 +267,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .skeleton span { animation: none; }
+  .personCard { transition: none; }
 }

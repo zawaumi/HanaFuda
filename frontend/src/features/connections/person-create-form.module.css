@@ -113,7 +113,7 @@
 .field input:focus,
 .field textarea:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 0.1875rem rgb(88 99 232 / 12%);
+  box-shadow: 0 0 0 0.1875rem rgb(53 111 99 / 14%);
 }
 
 .field input[aria-invalid="true"],

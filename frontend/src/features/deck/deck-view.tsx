@@ -59,14 +59,14 @@ export function DeckView() {
 
   return <div className={styles.page}>
     <header className={styles.header}>
-      <div><p className="eyebrow">Conversation deck</p><h1>会話の、手札。</h1><p>{result.summary}</p></div>
-      <span className={styles.deckCount}><strong>{String(result.cards.length).padStart(2, "0")}</strong><span>cards</span></span>
+      <div><p className="eyebrow">Conversation deck</p><h1>会話デッキ</h1><p>{result.summary}</p></div>
+      <span className={styles.deckCount}><strong>{String(result.cards.length).padStart(2, "0")}</strong><span>枚のカード</span></span>
     </header>
     <div className={styles.toolbar}><span>{revision}回目の生成 · カードを選んで内容を見る</span><button type="button" onClick={regenerate} disabled={generating}>{generating ? "再生成中…" : "別の話題で再生成"}</button></div>
     {error && <p className={styles.error} role="alert">{error}</p>}
     <section className={styles.experience} aria-label="会話の話題カード" aria-busy={generating}>
       <div className={styles.stage}>
-        <div className={styles.stageCaption}><span>THE HAND</span><span>好きな一枚を選ぶ</span></div>
+        <div className={styles.stageCaption}><span>話題カード</span><span>好きな一枚を選ぶ</span></div>
         <ol className={styles.hand} aria-label="話題カードの一覧">
           {result.cards.map((card, index) => {
             // Keep the first (strongest) suggestion at the center of the hand.
@@ -89,8 +89,8 @@ export function DeckView() {
                 onKeyDown={(event) => onCardKeyDown(event, index, result.cards.length)}
               >
                 <span className={styles.cardTop}><span>{String(index + 1).padStart(2, "0")} / {String(result.cards.length).padStart(2, "0")}</span><span aria-hidden="true">✦</span></span>
-                <span className={styles.cardBody}><span className={styles.cardLabel}>{index === 0 ? "FIRST PICK" : "CONVERSATION"}</span><strong>{card.topic}</strong><span className={styles.cardPreview}>{card.starter}</span></span>
-                <span className={styles.cardBottom}><span>HanaFuda</span><span aria-hidden="true">↗</span></span>
+                <span className={styles.cardBody}><span className={styles.cardLabel}>{index === 0 ? "最初のおすすめ" : "会話の話題"}</span><strong>{card.topic}</strong><span className={styles.cardPreview}>{card.starter}</span></span>
+                <span className={styles.cardBottom}><span>会話デッキ</span><span aria-hidden="true">↗</span></span>
               </button>
             </li>;
           })}
@@ -98,8 +98,8 @@ export function DeckView() {
         <p className={styles.stageHint}><span className={styles.desktopHint}>← → キーでもカードを選べます</span><span className={styles.mobileHint}>横にスワイプして、カードを選ぶ</span></p>
       </div>
       <article className={styles.detail} key={`${revision}-${activeIndex}`}>
-        <div className={styles.detailTop}><span>SELECTED CARD</span><span>{String(activeIndex + 1).padStart(2, "0")} / {String(result.cards.length).padStart(2, "0")}</span></div>
-        <p className={styles.detailEyebrow}>{activeIndex === 0 ? "まずはこの一枚から" : "こんな話題もおすすめ"}</p>
+        <div className={styles.detailTop}><span>選んだ話題</span><span>{String(activeIndex + 1).padStart(2, "0")} / {String(result.cards.length).padStart(2, "0")}</span></div>
+        <p className={styles.detailEyebrow}>{activeIndex === 0 ? "最初のおすすめ" : "ほかの話題"}</p>
         <h2>{activeCard.topic}</h2>
         <p className={styles.starter}>「{activeCard.starter}」</p>
         <div className={styles.detailExtras}>
@@ -109,6 +109,6 @@ export function DeckView() {
       </article>
     </section>
     <p className={styles.selectionNotice} aria-live="polite">話題 {activeIndex + 1}: {activeCard.topic} を選択中</p>
-    <div className={styles.footer}><span>話してみたら、次のためにひとこと記録。</span><Link className="button button-primary" href="/deck/session/feedback">会話後の記録へ進む <span aria-hidden="true">↗</span></Link></div>
+    <div className={styles.footer}><Link className="button button-primary" href="/deck/session/feedback">会話後の記録へ進む <span aria-hidden="true">↗</span></Link></div>
   </div>;
 }

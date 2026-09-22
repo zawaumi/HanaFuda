@@ -18,7 +18,8 @@
   gap: var(--space-5);
   padding: clamp(var(--space-6), 4vw, var(--space-8));
   background:
-    radial-gradient(circle at 92% 12%, rgb(217 255 131 / 65%), transparent 24%),
+    radial-gradient(circle at 92% 12%, rgb(234 209 170 / 34%), transparent 28%),
+    radial-gradient(circle at 4% 100%, rgb(206 197 232 / 19%), transparent 38%),
     var(--color-surface);
 }
 
@@ -151,7 +152,7 @@
   margin-top: 0.45rem;
   border-radius: 999px;
   background: var(--color-accent);
-  box-shadow: 0 0 0 0.25rem rgb(217 255 131 / 30%);
+  box-shadow: 0 0 0 0.25rem rgb(234 209 170 / 30%);
 }
 
 .memoryList p {

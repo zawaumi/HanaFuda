@@ -1,21 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --color-canvas: #f4f6fb;
-  --color-surface: #ffffff;
-  --color-surface-soft: #eef0ff;
-  --color-ink: #12162a;
-  --color-muted: #666d82;
-  --color-line: #dde1ec;
-  --color-navigation: #11172f;
-  --color-navigation-text: #f8fafc;
-  --color-navigation-muted: #aeb7d1;
-  --color-primary: #5863e8;
-  --color-primary-strong: #4650d4;
-  --color-primary-soft: #eef0ff;
-  --color-accent: #d9ff83;
-  --color-accent-ink: #24320a;
-  --color-danger: #c94444;
+  --color-canvas: #f4f3ef;
+  --color-surface: #fffefb;
+  --color-surface-soft: #eef2ec;
+  --color-ink: #24322e;
+  --color-muted: #62716a;
+  --color-line: #dce2db;
+  --color-navigation: #20332f;
+  --color-navigation-text: #f7f8f2;
+  --color-navigation-muted: #b2c4ba;
+  --color-primary: #356f63;
+  --color-primary-strong: #28584f;
+  --color-primary-soft: #e4f0e9;
+  --color-accent: #ead1aa;
+  --color-accent-ink: #4e3a24;
+  --color-danger: #ad444c;
+  --color-lilac-soft: #f0edf7;
+  --color-sand-soft: #f8efe5;
 
   --font-sans: "Noto Sans JP", "Hiragino Sans", "Yu Gothic UI", "Yu Gothic",
     system-ui, sans-serif;
@@ -35,8 +37,8 @@
   --radius-md: 0.875rem;
   --radius-lg: 1.25rem;
   --radius-xl: 1.75rem;
-  --shadow-sm: 0 0.25rem 1rem rgb(18 22 42 / 0.06);
-  --shadow-md: 0 1rem 2.5rem rgb(18 22 42 / 0.1);
+  --shadow-sm: 0 0.35rem 1.3rem rgb(33 52 43 / 0.055);
+  --shadow-md: 0 1rem 2.5rem rgb(33 52 43 / 0.11);
   --content-max: 70rem;
   --sidebar-width: 15rem;
   --topbar-height: 5rem;
@@ -66,7 +68,10 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
-  background: var(--color-canvas);
+  background:
+    radial-gradient(circle at 85% 0, rgb(234 209 170 / 18%), transparent 30rem),
+    radial-gradient(circle at 0 65%, rgb(194 217 200 / 15%), transparent 36rem),
+    var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -86,12 +91,12 @@ select {
 }
 
 :focus-visible {
-  outline: 0.1875rem solid rgb(88 99 232 / 0.35);
+  outline: 0.1875rem solid rgb(53 111 99 / 0.42);
   outline-offset: 0.1875rem;
 }
 
 ::selection {
-  background: rgb(88 99 232 / 0.18);
+  background: rgb(53 111 99 / 0.2);
 }
 
 .page-stack {
@@ -132,6 +137,15 @@ select {
   border-radius: var(--radius-xl);
   background: var(--color-surface);
   box-shadow: var(--shadow-sm);
+}
+
+#main-content > * {
+  animation: page-enter 440ms cubic-bezier(.2, .75, .2, 1) both;
+}
+
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(.55rem); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .empty-state {
@@ -187,14 +201,17 @@ select {
   transform: translateY(-0.0625rem);
 }
 
+.button:active { transform: translateY(0) scale(.985); }
+
 .button-primary {
   background: var(--color-primary);
   color: #ffffff;
-  box-shadow: 0 0.5rem 1.25rem rgb(88 99 232 / 0.22);
+  box-shadow: 0 0.5rem 1.25rem rgb(53 111 99 / 0.18);
 }
 
 .button-primary:hover {
   background: var(--color-primary-strong);
+  box-shadow: 0 .65rem 1.5rem rgb(53 111 99 / 0.24);
 }
 
 .field {
@@ -208,7 +225,7 @@ select {
 }
 
 .field:hover {
-  border-color: #c1c7d8;
+  border-color: #a9bdb1;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -220,6 +237,8 @@ select {
   *::before,
   *::after {
     scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }
