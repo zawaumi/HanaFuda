@@ -81,7 +81,7 @@ class DeckCard(SchemaModel):
     topic: str = Field(min_length=1, max_length=100)
     starter: str = Field(min_length=1, max_length=300)
     reason: str = Field(min_length=1, max_length=500)
-    branches: List[ConversationBranch] = Field(min_length=1)
+    branches: List[ConversationBranch] = Field(min_length=2, max_length=2)
 
 
 class DeckGenerateResponse(SchemaModel):
