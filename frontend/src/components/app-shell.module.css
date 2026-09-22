@@ -110,6 +110,10 @@
 }
 
 .topbarLabel { color: var(--color-muted); font-size: 0.8125rem; font-weight: 400; letter-spacing: 0.04em; }
+.topbarActions { display: flex; align-items: center; gap: var(--space-5); }
+.signOut { border: 0; background: transparent; color: var(--color-muted); font-size: .8125rem; cursor: pointer; }
+.signOut:hover { color: var(--color-ink); }
+.signOut:disabled { cursor: wait; opacity: .6; }
 .profileLink { color: var(--color-primary-strong); font-size: .875rem; font-weight: 500; }
 .profileLink:hover { text-decoration: underline; text-underline-offset: .25rem; }
 .content { width: min(100%, var(--content-max)); margin-inline: auto; padding: clamp(var(--space-6), 5vw, var(--space-12)); }

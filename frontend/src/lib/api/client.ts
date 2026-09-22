@@ -1,5 +1,6 @@
 import { apiConfig } from "./config";
 import { ApiError, type ApiErrorKind } from "./errors";
+import { getUserIdHeader } from "./user-header";
 
 type ApiRequestOptions = Omit<RequestInit, "body"> & {
   body?: unknown;
@@ -68,6 +69,9 @@ export function createApiClient(options: ApiClientOptions = {}) {
     const headers = new Headers(request.headers);
     headers.set("Accept", "application/json");
     if (request.body !== undefined) headers.set("Content-Type", "application/json");
+
+    const userId = await getUserIdHeader();
+    if (userId) headers.set("X-User-Id", userId);
 
     try {
       const response = await fetcher(`${baseUrl}${path}`, {

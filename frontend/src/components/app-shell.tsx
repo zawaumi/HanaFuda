@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, type ReactNode } from "react";
+import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { SeasonMark, seasonForIndex } from "@/lib/season";
 import styles from "./app-shell.module.css";
 
@@ -47,7 +49,35 @@ function Navigation({ mobile = false }: { mobile?: boolean }) {
   );
 }
 
+function SignOutButton() {
+  const router = useRouter();
+  const [pending, setPending] = useState(false);
+
+  if (!isSupabaseConfigured) return null;
+
+  async function signOut() {
+    setPending(true);
+    await getSupabaseBrowserClient().auth.signOut();
+    router.replace("/login");
+    router.refresh();
+  }
+
+  return (
+    <button className={styles.signOut} type="button" onClick={() => { void signOut(); }} disabled={pending}>
+      {pending ? "ログアウト中…" : "ログアウト"}
+    </button>
+  );
+}
+
+const bareRoutes = ["/login", "/signup", "/auth"];
+
 export function AppShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+
+  if (bareRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`))) {
+    return <>{children}</>;
+  }
+
   return (
     <div className={styles.shell}>
       <a className={styles.skipLink} href="#main-content">本文へ移動</a>
@@ -63,7 +93,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className={styles.workspace}>
         <header className={styles.topbar}>
           <span className={styles.topbarLabel}>会話の準備</span>
-          <Link className={styles.profileLink} href="/profile">プロフィール</Link>
+          <div className={styles.topbarActions}>
+            <Link className={styles.profileLink} href="/profile">プロフィール</Link>
+            <SignOutButton />
+          </div>
         </header>
         <main id="main-content" className={styles.content} tabIndex={-1}>{children}</main>
       </div>
