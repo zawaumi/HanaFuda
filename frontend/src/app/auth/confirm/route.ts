@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { safeNextPath } from "@/lib/safe-next-path";
 
 /** Target of the confirmation link Supabase emails after sign-up. */
 export async function GET(request: NextRequest) {
@@ -20,5 +21,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/login?error=confirm", request.url));
   }
 
-  return NextResponse.redirect(new URL(next?.startsWith("/") ? next : "/", request.url));
+  return NextResponse.redirect(new URL(safeNextPath(next), request.url));
 }

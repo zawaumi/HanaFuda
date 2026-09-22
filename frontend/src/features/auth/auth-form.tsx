@@ -6,6 +6,7 @@ import { useState, type CSSProperties, type FormEvent } from "react";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { SeasonMark, seasonForIndex } from "@/lib/season";
+import { safeNextPath } from "@/lib/safe-next-path";
 import styles from "./auth-form.module.css";
 
 type Mode = "login" | "signup";
@@ -107,8 +108,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
         if (signInError) throw signInError;
       }
 
-      const next = searchParams.get("next");
-      router.replace(next && next.startsWith("/") ? next : "/");
+      router.replace(safeNextPath(searchParams.get("next")));
       router.refresh();
     } catch (reason) {
       setError(messageFor(reason));

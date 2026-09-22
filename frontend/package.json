@@ -10,7 +10,8 @@
     "typecheck": "next typegen && tsc --noEmit",
     "check": "npm run lint && npm run typecheck",
     "test:mock-profile": "node --experimental-strip-types --test tests/mock-profile-storage.test.mjs",
-    "test:deck-flow": "node --experimental-strip-types --test tests/deck-flow.test.mjs"
+    "test:deck-flow": "node --experimental-strip-types --test tests/deck-flow.test.mjs",
+    "test:safe-next-path": "node --experimental-strip-types --test tests/safe-next-path.test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
